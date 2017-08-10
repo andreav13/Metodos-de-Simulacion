@@ -1,3 +1,4 @@
+#include <iostream>
 #include <fstream> //save to file
 #include <cmath> //math functions
 
@@ -44,10 +45,10 @@ int main(void){
   Cuerpo Balon;
 
   //(x0, y0, Vx0, Vy0, m0, R0)
-  Balon.Inicie(0, 0, 8, 6, 0.457, 0.15);
+  Balon.Inicie(0, 0, 12, 16, 0.457, 0.15);
   
-  for(t=0;t<5;t+=dt){
-    cout<<Balon.x<<" "<<Balon.y<<endl;
+  for(t=0;t<3.5;t+=dt){
+    cout<<Balon.Getx()<<" "<<Balon.Gety()<<endl;
     Balon.CalculeFuerza();
     Balon.Muevase(dt);
   }
