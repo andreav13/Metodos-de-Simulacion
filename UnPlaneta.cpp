@@ -16,6 +16,7 @@ public:
   void Inicie(double x0, double y0, double Vx0, double Vy0, double m0, double R0);
   void CalculeFuerza(void);
   void Muevase(double dt);
+  void Dibujese(void);
   double Getx(void){return x;};
   double Gety(void){return y;};
 };
@@ -40,21 +41,60 @@ void Cuerpo::Muevase(double dt){
 }
 
 
+void Cuerpo::Dibujese(void){
+  cout<<", "<<x<<"+"<<R<<"*cos(t),"<<y<<"+"<<R<<"*sin(t)";
+}
+
+
+//Funciones globales
+void InicieAnimacion(void){
+  cout<<"set terminal gif animate"<<endl;
+  cout<<"set output 'MiPlaneta.gif'"<<endl;
+  cout<<"unset key"<<endl;
+  cout<<"set xrange[-120:120]"<<endl;
+  cout<<"set yrange[-120:120]"<<endl;
+  cout<<"set size ratio -1"<<endl;
+  cout<<"set parametric"<<endl;
+  cout<<"set trange [0:7]"<<endl;
+  cout<<"set isosamples 12"<<endl;
+}
+
+void InicieCuadro(void){
+  cout<<"plot 0,0 ";
+}
+
+void TermineCuadro(void){
+  cout<<endl;
+}
+
+
+
 //Main
 int main(void){
 
-  double t, dt=0.01;
+  double t, tdibujo, tmax, dt=0.01;
+  int Ndibujos=1000;
   Cuerpo Planeta;
 
   double m=1, R=5;
   double r, omega, V, T;
-  r=100; omega=sqrt(GM*pow(r,-3)); V=omega*r; T=2*M_PI/omega;
+  r=100; omega=sqrt(GM*pow(r,-3)); V=omega*r; T=2*M_PI/omega; tmax=1.1*T;
 
-  //(x0, y0, Vx0, Vy0, m0, R0)
-  Planeta.Inicie(r, 0, 0, V, m, R);
+
+  InicieAnimacion();
   
-  for(t=0;t<1.1*T;t+=dt){
-    cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
+  //(x0, y0, Vx0, Vy0, m0, R0)
+  Planeta.Inicie(r, 0, 0, 0.5*V, m, R);
+  
+  for(t=0, tdibujo=0;t<tmax;t+=dt, tdibujo+=dt){
+    if(tdibujo>tmax/Ndibujos){
+      InicieCuadro();
+      Planeta.Dibujese();
+      TermineCuadro();
+      tdibujo=0;
+    }
+
+    //cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
     Planeta.CalculeFuerza();
     Planeta.Muevase(dt);
   }
@@ -62,3 +102,6 @@ int main(void){
   return 0;
 
 }
+
+
+//PARA CORRER:    ./a.out | gnuplot
