@@ -46,10 +46,14 @@ int main(void){
   double t, dt=0.01;
   Cuerpo Planeta;
 
+  double m=1, R=5;
+  double r, omega, V, T;
+  r=100; omega=sqrt(GM*pow(r,-3)); V=omega*r; T=2*M_PI/omega;
+
   //(x0, y0, Vx0, Vy0, m0, R0)
-  Planeta.Inicie(0, 0, 12, 16, 0.457, 0.15);
+  Planeta.Inicie(r, 0, 0, V, m, R);
   
-  for(t=0;t<3.5;t+=dt){
+  for(t=0;t<1.1*T;t+=dt){
     cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
     Planeta.CalculeFuerza();
     Planeta.Muevase(dt);
