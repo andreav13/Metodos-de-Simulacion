@@ -72,7 +72,7 @@ void TermineCuadro(void){
 //Main
 int main(void){
 
-  double t, tdibujo, tmax, dt=0.01;
+  double t, tdibujo, tmax, dt=0.05;
   int Ndibujos=1000;
   Cuerpo Planeta;
 
