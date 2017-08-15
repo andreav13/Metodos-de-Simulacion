@@ -81,18 +81,18 @@ int main(void){
   r=100; omega=sqrt(GM*pow(r,-3)); V=omega*r; T=2*M_PI/omega; tmax=1.1*T;
 
 
-  InicieAnimacion();
+  //InicieAnimacion();
   
   //(x0, y0, Vx0, Vy0, m0, R0)
   Planeta.Inicie(r, 0, 0, 0.5*V, m, R);
   
   for(t=0, tdibujo=0;t<tmax;t+=dt, tdibujo+=dt){
-    if(tdibujo>tmax/Ndibujos){
+    /*if(tdibujo>tmax/Ndibujos){
       InicieCuadro();
       Planeta.Dibujese();
       TermineCuadro();
       tdibujo=0;
-    }
+      }*/
 
     //cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
     Planeta.CalculeFuerza();
