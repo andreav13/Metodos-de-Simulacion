@@ -33,20 +33,17 @@ double IntegralPorSimpson(double alpha, double x, double a, double b, int N){
 
 
 double Bessel(double alpha, double x){
-  return 1/M_PI*IntegralPorSimpson(alpha, x, 0, M_PI, 50);
+  return 1/M_PI*IntegralPorSimpson(alpha, x, 0, M_PI, 100);
 }
 
 
 
 int main(void){
   double x, alpha=0;
-  for(x=0;x<20;x+=0.1){
+  for(x=0;x<80;x+=0.1){
     cout<<x<<" "<<Bessel(alpha, x)<<endl;
   }
 
-  
-
-  //cout<<"Integral="<<IntegralPorSimpson(0,M_PI,10)<<endl;
   
   return 0;
 
