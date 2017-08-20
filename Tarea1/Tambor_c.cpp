@@ -70,8 +70,6 @@ double CeroBiseccion(double a, double b){
 
 int main(void){
 
-  
-  
   double n_a,n_b,m;
   for(n_a=0.167, n_b=0.793; n_b<3.923; n_b+=0.626){
 
@@ -79,15 +77,13 @@ int main(void){
     cout<<"R(r=5)=0 en lambda="<<lambda<<endl;
     n_a=n_b;
 
-    ostringstream ss;
-    ss<<lambda;
-    string lambda_str = ss.str();
-
     ofstream R_r;
-    R_r.open("R_r"+lambda_str+".txt");
+    R_r.open("R_r"+std::to_string(lambda)+".txt");
+    
     for(double r=0.01;r<=5.0;r+=0.01){
       R_r << r <<" "<< Bessel(alpha, r*lambda) << "\n";
-    }R_r.close();
+    }
+    R_r.close();
   }
 
   

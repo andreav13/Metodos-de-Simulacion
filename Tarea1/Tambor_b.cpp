@@ -1,6 +1,6 @@
-#include <iostream> //print
-#include <fstream> //save to file
-#include <cmath> //math functions
+#include <iostream> 
+#include <fstream> 
+#include <cmath> 
 
 using namespace std;
 

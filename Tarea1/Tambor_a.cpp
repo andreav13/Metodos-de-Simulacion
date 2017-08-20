@@ -5,7 +5,6 @@
 using namespace std;
 
 const double lambda=1;
-const double a=5;
 
 
 double f1(double R, double x2, double r){
