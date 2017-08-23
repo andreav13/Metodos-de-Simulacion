@@ -34,12 +34,12 @@ double IntegralPorSimpson(double alpha, double x, double a, double b, int N){
 
 
 double Bessel(double alpha, double x){
-  return 1/M_PI*IntegralPorSimpson(alpha, x, 0, M_PI, 100);
+  return 1/M_PI*IntegralPorSimpson(alpha, x, 0, M_PI, 1000);
 }
 
 
 double f(double lambda){
-  double r=1;
+  double r=5;
   double x=r*lambda;
 
   return Bessel(alpha, x);
@@ -52,7 +52,7 @@ int main(void){
 
   double lambda;
   
-  for(lambda=0.01;lambda<=80;lambda+=0.01){
+  for(lambda=0.01;lambda<=10;lambda+=0.01){
     cout<<lambda<<" "<<f(lambda)<<endl;
   }
 
