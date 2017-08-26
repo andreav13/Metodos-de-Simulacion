@@ -67,7 +67,7 @@ void Cuerpo::Mueva_r(double dt, double Constante){
 
 
 void Cuerpo::Mueva_V(double dt, double Constante){
-  V+=F*(Constante*dt);
+  V+=F*(Constante*dt)/m;
 }
 
 
