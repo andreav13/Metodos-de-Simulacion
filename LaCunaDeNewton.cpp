@@ -5,7 +5,7 @@
 using namespace std;
 
 const double g=9.8;
-const int N=1;
+const int N=6;
 const double Zeta=0.1786178958448091;
 const double Lambda=-0.2123418310626054;
 const double Xi=-0.06626458266981849;
@@ -14,12 +14,13 @@ class Colisionador;
 
 //---------------------Clase Cuerpo--------------------------_//
 
-class Cuerpo{                   // punto y coma obligatorio despues del corchete
+class Cuerpo{
 private:
   //vector3D tau, omega;
   double theta, omega, tau, m, R, L, I, xcorrido;
 public:
   void  Inicie(double theta0, double omega0, double m0, double R0, double L0, double x0corrido);
+  void InicieFuerza(void);
   void BorrarFuerza(void);
   void AgregueFuerza(double tau0);
   void Mueva_theta(double dt,double Constante);
@@ -38,6 +39,10 @@ void  Cuerpo::Inicie(double theta0, double omega0, double m0, double R0, double 
   L=L0;
   I=m*L*L;
   xcorrido=x0corrido;
+}
+
+void Cuerpo::InicieFuerza(){
+  tau=-m*g*L*sin(theta);
 }
 
 void Cuerpo::BorrarFuerza(void){
@@ -66,8 +71,8 @@ void Cuerpo::Dibujese(void){
 class Colisionador{
 private:
 public:
-void  CalculeTodasLasFuerzas(Cuerpo* Pendulo);
-void  CalculeLaFuerzaEntre(Cuerpo & Pendulo1,Cuerpo & Pendulo2);
+  void  CalculeTodasLasFuerzas(Cuerpo* Pendulo);
+  void  CalculeLaFuerzaEntre(Cuerpo & Pendulo1,Cuerpo & Pendulo2);
 };
 
 
@@ -75,9 +80,9 @@ void  CalculeLaFuerzaEntre(Cuerpo & Pendulo1,Cuerpo & Pendulo2);
 void Colisionador:: CalculeTodasLasFuerzas(Cuerpo* Pendulo){
   int i,j;
   // Borrar todas las fuerzas
-  for(i=0;i<N;i++){Pendulo[i].BorrarFuerza();}
+  for(i=0;i<N;i++){Pendulo[i].InicieFuerza();}
   //Agregar fuerzas externas
-  for(i=0;i<N;i++){Pendulo[i].AgregueFuerza(-Pendulo[i].m*g*sin(Pendulo[i].theta));}
+  //for(i=0;i<N;i++){Pendulo[i].AgregueFuerza(-Pendulo[i].m*g*sin(Pendulo[i].theta));}
   // Calculas todas las fuerzas entre parejas de péndulos.
   /*for(i=0;i<N;i++){
     for(j=i+1;j<N;j++){
@@ -118,7 +123,7 @@ void TermineCuadro(void){
 //-----------------Programa Principal----------------//
 
 int main(void){
-  double t,dt=0.01;
+  double t,dt=1.0;
   int Ndibujos,tdibujo;
   Cuerpo Pendulo[N]; int i;
   Colisionador Newton;
@@ -131,7 +136,7 @@ int main(void){
   
   //-------------(theta0,omega0,m0,R0,L0,x0corrido);
   Pendulo[0].Inicie(theta0,0,m0,R0,L0,x0corrido);
-  for(i=1;i<N;i++)Pendulo[i].Inicie(0,0,m0,R0,L0,x0corrido+2*R0*i);
+  for(i=1;i<N;i++)Pendulo[i].Inicie(0,0,m0,R0,L0,2*R0*i);
   
 
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
