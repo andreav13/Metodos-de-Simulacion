@@ -4,8 +4,9 @@
 #include "Vector.h"
 using namespace std;
 
-const double g=9.8;
-const int N=6;
+const double g=980;
+const int N=5;
+const double K=1e7;
 const double Zeta=0.1786178958448091;
 const double Lambda=-0.2123418310626054;
 const double Xi=-0.06626458266981849;
@@ -26,8 +27,9 @@ public:
   void Mueva_theta(double dt,double Constante);
   void Mueva_omega(double dt,double Constante);
   void Dibujese(void);
-  //double Getx(void){return r.x();};    
-  //double GetFx(void);
+  double x(void){return xcorrido+L*sin(theta);};    
+  double y(void){return -L*cos(theta);};
+  double Gettau(void){return tau;};
   friend class Colisionador;
 };
 
@@ -62,8 +64,8 @@ void Cuerpo::Mueva_omega(double dt,double Constante){
 }
 
 void Cuerpo::Dibujese(void){
-  cout<<", "<<xcorrido+L*sin(theta)<<"+"<<R<<"*cos(t),"<<-L*cos(theta)<<"+"<<R<<"*sin(t) , "
-      <<xcorrido<<"+"<<(xcorrido+L*sin(theta)-xcorrido)/7.0<<"*t,"<<0<<"-"<<L*cos(theta)/7.0<<"*t";
+  cout<<", "<<xcorrido+L*sin(theta)<<"+"<<R<<"*cos(t),"<<-L*cos(theta)<<"+"<<R<<"*sin(t),"
+      <<xcorrido<<"+"<<(xcorrido+L*sin(theta)-xcorrido)/7.0<<"*t,"<<-L*cos(theta)/7.0<<"*t";
   
 }
 
@@ -85,20 +87,26 @@ void Colisionador:: CalculeTodasLasFuerzas(Cuerpo* Pendulo){
   for(i=0;i<N;i++){Pendulo[i].InicieFuerza();}
   //Agregar fuerzas externas
   //for(i=0;i<N;i++){Pendulo[i].AgregueFuerza(-Pendulo[i].m*g*sin(Pendulo[i].theta));}
+  
   // Calculas todas las fuerzas entre parejas de péndulos.
-  /*for(i=0;i<N;i++){
-    for(j=i+1;j<N;j++){
-      CalculeLaFuerzaEntre(Pendulo[i],Pendulo[j]);
-    }
-    }*/
+  for(i=0;i<N-1;i++){
+    CalculeLaFuerzaEntre(Pendulo[i],Pendulo[i+1]);
+  }
 }
 
 
 void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Pendulo1, Cuerpo & Pendulo2){
-  /*vector3D F1,dr=Pendulo2.r-Pendulo1.r;
-  double aux=G*Pendulo1.m*Pendulo2.m*pow(norma2(dr),-1.5);
-  F1=dr*aux;
-  Pendulo1.AgregueFuerza(F1); Pendulo2.AgregueFuerza(F1*(-1));*/
+  double F2,s,tau2,tau1,d21;
+  d21=Pendulo2.x()-Pendulo1.x();
+  s=(Pendulo2.R+Pendulo1.R-d21);
+  if (s>0){
+    F2=K*pow(s,1.5)*d21/fabs(d21); //fabs valor absoluto
+    tau2=F2*Pendulo2.L;
+    tau1=-F2*Pendulo1.L;
+    Pendulo2.AgregueFuerza(tau2);
+    Pendulo1.AgregueFuerza(tau1);
+  }
+  
 }
 
 //---------------------Funciones Globales--------------------------_//
@@ -125,16 +133,17 @@ void TermineCuadro(void){
 //-----------------Programa Principal----------------//
 
 int main(void){
-  double t,dt=1.0;
-  int Ndibujos,tdibujo;
+  double t,dt=0.0001;
+  int Ndibujos;
+  double tdibujo;
   Cuerpo Pendulo[N]; int i;
   Colisionador Newton;
   
-  double m0=1, L0=10,R0=1, x0corrido=0, theta0=-15*M_PI/180;
+  double m0=100, L0=10,R0=1, x0corrido=0, theta0=-15*M_PI/180;
   double T=2*M_PI*sqrt(L0/g),tmax=3*T;
   
   InicieAnimacion();
-  Ndibujos=500;
+  Ndibujos=50;
   
   //-------------(theta0,omega0,m0,R0,L0,x0corrido);
   Pendulo[0].Inicie(theta0,0,m0,R0,L0,x0corrido);
@@ -170,7 +179,3 @@ int main(void){
   
   return 0;
 }
-
-
-
-// Algoritmo predictor corrector
