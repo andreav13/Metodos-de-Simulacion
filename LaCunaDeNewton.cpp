@@ -62,7 +62,9 @@ void Cuerpo::Mueva_omega(double dt,double Constante){
 }
 
 void Cuerpo::Dibujese(void){
-  cout<<", "<<xcorrido+L*sin(theta)<<"+"<<R<<"*cos(t),"<<-L*cos(theta)<<"+"<<R<<"*sin(t)";
+  cout<<", "<<xcorrido+L*sin(theta)<<"+"<<R<<"*cos(t),"<<-L*cos(theta)<<"+"<<R<<"*sin(t) , "
+      <<xcorrido<<"+"<<(xcorrido+L*sin(theta)-xcorrido)/7.0<<"*t,"<<0<<"-"<<L*cos(theta)/7.0<<"*t";
+  
 }
 
 
