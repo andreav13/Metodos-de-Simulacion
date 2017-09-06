@@ -109,7 +109,7 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
 
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
-  cout<<"set output 'DosGranosVector.gif'"<<endl;
+  cout<<"set output 'gas2D.gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange [-10:110]"<<endl;
   cout<<"set yrange [-10:110]"<<endl;
@@ -136,7 +136,8 @@ int main(void){
   
   int i,j;
   double t, dt=1e-3;
-  int Ndibujos,tdibujo;
+  int Ndibujos;
+  double tdibujo;
   Cuerpo Grano[N+4];
   Colisionador Newton;
   Crandom ran64(1);

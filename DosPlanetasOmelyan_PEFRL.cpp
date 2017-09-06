@@ -124,7 +124,8 @@ int main(void){
   
   int i;
   double t, dt=50;
-  int Ndibujos,tdibujo;
+  int Ndibujos;
+  double tdibujo;
   Cuerpo Planeta[N];
   Colisionador Newton;
 
