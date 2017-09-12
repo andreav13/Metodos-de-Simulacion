@@ -121,10 +121,10 @@ void InicieAnimacion(void){
 
 void InicieCuadro(void){
   cout<<"plot 0,0 ";
-  cout<<" , "<<100/7<<"*t,0";
-  cout<<" , "<<100/7<<"*t,100";
-  cout<<" , 0,"<<100/7<<"*t";
-  cout<<" , 100,"<<100/7<<"*t";
+  cout<<" , "<<100.1/7<<"*t,0";
+  cout<<" , "<<100.1/7<<"*t,100";
+  cout<<" , 0,"<<100.1/7<<"*t";
+  cout<<" , 100,"<<100.1/7<<"*t";
 }
 void TermineCuadro(void){
   cout<<endl;
