@@ -48,7 +48,7 @@ private:
 public:
   void Inicie(void);
   void CalculeTodasLasFuerzas(Cuerpo* Grano, double dt);
-  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, double dt);
+  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstabaEnContacto, double dt);
 };
   
 //Funciones de la clase cuerpo
@@ -97,7 +97,7 @@ void Cuerpo::Dibujese(void){
 
 void Colisionador::Inicie(void){
   int i,j;
-  for(i=0;i<N+4;i++){
+  for(i=0;i<N;i++){
     for(j=i+1;j<N+4;j++){
       ele[i][j].cargue(0,0,0);
       EstoyEnColision[i][j]=false;
@@ -108,7 +108,7 @@ void Colisionador::Inicie(void){
 void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
   int i,j;
   vector3D g_vector; g_vector.cargue(0,-g,0);
-  for(i=0;i<N;i++){
+  for(i=0;i<N+4;i++){
     Grano[i].BorreFuerzayTorque();
   }
   //Agregue la fuerza de la gravedad
@@ -127,11 +127,11 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
 
 void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstoyEnColision, double dt){
   vector3D F2,Fn,Ft,runitario,n,Vc,Vcn,Vct,t,r21 = Grano2.r-Grano1.r;
-  double s,m1,m2,R1,R2,m12,componenteVcn,normaVct,componenteFn;
+  double s,m1,m2,R1,R2,m12,componenteVcn,normaVct,componenteFn,normaFt,Ftmax;
   double ERFF=1e-8,d21=norma(r21);
   s=Grano1.R+Grano2.R-d21;
 
-  if(s>0){
+  if(s>0){    //SI SE CHOCAN
 
     //Geometria y dinamica del contacto
     m1=Grano1.m; m2=Grano2.m; m12=(m1*m2)/(m1+m2);
@@ -159,18 +159,26 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector
     ele+=(Vct*dt);
     Ft=ele*(-Kcundall);
     //Fuerza cinética
-    Ftmax=MU*normaFn; normaFt=norma(Ft);
+    Ftmax=MU*componenteFn; normaFt=norma(Ft);
     if(normaFt>Ftmax) Ft=t*(-Ftmax);
     
-    F2=Fn;
+    F2=Fn+Ft;
     Grano1.AgregueFuerza(F2*(-1)); Grano2.AgregueFuerza(F2);
+    Grano1.AgregueTorque((n*R1)^(Ft*(-1))); Grano2.AgregueTorque((n*(-R2))^Ft);
+
+    EstoyEnColision=true;
   }
+  
+  else if(EstoyEnColision==true){
+    ele.cargue(0,0,0); EstoyEnColision=false;
+  }
+  
 }
 
 
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
-  cout<<"set output 'granos_que_giran.gif'"<<endl;
+  cout<<"set output 'grano_rebota_y_gira.gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange [-10:110]"<<endl;
   cout<<"set yrange [-10:110]"<<endl;
@@ -203,15 +211,15 @@ int main(void){
   Colisionador Newton;
   Crandom ran64(1);
 
-  double m0=1, R0=3, V=10, omega0=10;
+  double m0=1, R0=6, V=10, omega0=10;
   double Rpared=10000, Mpared=1000;
 
-  double T=Lx/V, tmax=5*T;
+  double T=Lx/V, tmax=2*T;
 
   double dx=Lx/(Nx+1), dy=Ly/(Ny+1), theta;
 
   InicieAnimacion();
-  Ndibujos=500;
+  Ndibujos=2000;
 
   //   Paredes
   //           (x0, y0, z0, Vx0, Vy0, Vz0, theta0, omega0, m0, R0)
