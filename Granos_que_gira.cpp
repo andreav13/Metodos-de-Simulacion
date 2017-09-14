@@ -48,7 +48,7 @@ private:
 public:
   void Inicie(void);
   void CalculeTodasLasFuerzas(Cuerpo* Grano, double dt);
-  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstabaEnContacto, double dt);
+  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstoyEnColision, double dt);
 };
   
 //Funciones de la clase cuerpo
@@ -108,7 +108,7 @@ void Colisionador::Inicie(void){
 void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
   int i,j;
   vector3D g_vector; g_vector.cargue(0,-g,0);
-  for(i=0;i<N+4;i++){
+  for(i=0;i<N;i++){
     Grano[i].BorreFuerzayTorque();
   }
   //Agregue la fuerza de la gravedad
@@ -160,11 +160,11 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector
     Ft=ele*(-Kcundall);
     //Fuerza cinética
     Ftmax=MU*componenteFn; normaFt=norma(Ft);
-    if(normaFt>Ftmax) Ft=t*(-Ftmax);
+    if(normaFt>Ftmax) Ft=ele*(-Ftmax/norma(ele));
     
     F2=Fn+Ft;
     Grano1.AgregueFuerza(F2*(-1)); Grano2.AgregueFuerza(F2);
-    Grano1.AgregueTorque((n*R1)^(Ft*(-1))); Grano2.AgregueTorque((n*(-R2))^Ft);
+    Grano1.AgregueTorque((n*(-R2))^Ft); Grano2.AgregueTorque((n*R1)^(Ft*(-1)));
 
     EstoyEnColision=true;
   }
@@ -214,12 +214,13 @@ int main(void){
   double m0=1, R0=6, V=10, omega0=10;
   double Rpared=10000, Mpared=1000;
 
-  double T=Lx/V, tmax=2*T;
+  double T=Lx/V, tmax=5*T;
 
   double dx=Lx/(Nx+1), dy=Ly/(Ny+1), theta;
 
+  Ndibujos=500;
   InicieAnimacion();
-  Ndibujos=2000;
+ 
 
   //   Paredes
   //           (x0, y0, z0, Vx0, Vy0, Vz0, theta0, omega0, m0, R0)
