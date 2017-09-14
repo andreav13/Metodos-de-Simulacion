@@ -23,12 +23,13 @@ class Colisionador;
 class Cuerpo{
 private:
   vector3D r,V,F,omega,tau;
-  double m,R,theta;
+  double m,R,theta,I;
   
 public:
   void Inicie(double x0, double y0, double z0, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double R0);
-  void BorreFuerza(void);
+  void BorreFuerzayTorque(void);
   void AgregueFuerza(vector3D F0);
+  void AgregueTorque(vector3D tau0);
   void Mueva_r(double dt, double Constante);
   void Mueva_V(double dt, double Constante);
   double Getx(void){return r.x();};
@@ -54,12 +55,13 @@ void Cuerpo::Inicie(double x0, double y0, double z0, double Vx0, double Vy0, dou
   V.cargue(Vx0,Vy0,Vz0);
   omega.cargue(0,0,omega0);
   theta=theta0;
-  m=m0; R=R0;
+  m=m0; R=R0; I=2/5.*m*R*R;
 }
 
 
-void Cuerpo::BorreFuerza(void){
+void Cuerpo::BorreFuerzayTorque(void){
   F.cargue(0,0,0);
+  tau.cargue(0,0,0);
 }
 
 
@@ -67,19 +69,25 @@ void Cuerpo::AgregueFuerza(vector3D F0){
   F+=F0;
 }
 
+void Cuerpo::AgregueTorque(vector3D tau0){
+  tau+=tau0;
+}
 
 void Cuerpo::Mueva_r(double dt, double Constante){
   r+=V*(Constante*dt);
+  theta+=omega.z()*Constante*dt;
 }
 
 
 void Cuerpo::Mueva_V(double dt, double Constante){
   V+=F*(Constante*dt)/m;
+  omega+=tau*Constante*dt/I;
 }
 
 
 void Cuerpo::Dibujese(void){
-  cout<<", "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t)";
+  cout<<", "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t) , "
+      <<r.x()<<"+"<<R*cos(theta)/7.0<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7.0<<"*t";
 }
 
 
@@ -87,7 +95,7 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano){
   int i,j;
   vector3D g_vector; g_vector.cargue(0,-g,0);
   for(i=0;i<N;i++){
-    Grano[i].BorreFuerza();
+    Grano[i].BorreFuerzayTorque();
   }
   //Agregue la fuerza de la gravedad
   for(i=0;i<N;i++){
@@ -141,7 +149,7 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
 
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
-  cout<<"set output 'granos.gif'"<<endl;
+  cout<<"set output 'granos_que_giran.gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange [-10:110]"<<endl;
   cout<<"set yrange [-10:110]"<<endl;
