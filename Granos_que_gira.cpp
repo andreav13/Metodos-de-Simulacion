@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const double K=1e4, Gamma=50;
+const double K=1e4, Gamma=50, Kcundall=10, MU=0.4;
 const double g=9.8;
 const double Lx=100, Ly=100;
 const int Nx=1, Ny=1, N=Nx*Ny;
@@ -43,10 +43,12 @@ public:
 //Clase Colisionador
 class Colisionador{
 private:
-
+  vector3D ele[N+4][N+4];
+  bool EstoyEnColision[N+4][N+4];
 public:
-  void CalculeTodasLasFuerzas(Cuerpo* Grano);
-  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2);
+  void Inicie(void);
+  void CalculeTodasLasFuerzas(Cuerpo* Grano, double dt);
+  void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, double dt);
 };
   
 //Funciones de la clase cuerpo
@@ -91,7 +93,19 @@ void Cuerpo::Dibujese(void){
 }
 
 
-void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano){
+//Funciones de la clase colisionador
+
+void Colisionador::Inicie(void){
+  int i,j;
+  for(i=0;i<N+4;i++){
+    for(j=i+1;j<N+4;j++){
+      ele[i][j].cargue(0,0,0);
+      EstoyEnColision[i][j]=false;
+    }
+  }
+}
+
+void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
   int i,j;
   vector3D g_vector; g_vector.cargue(0,-g,0);
   for(i=0;i<N;i++){
@@ -105,14 +119,14 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano){
   //Calcular todas las fuerzas entre parejas de planetas
   for(i=0;i<N;i++){
     for(j=i+1;j<N+4;j++){
-      CalculeLaFuerzaEntre(Grano[i], Grano[j]);
+      CalculeLaFuerzaEntre(Grano[i], Grano[j], ele[i][j], EstoyEnColision[i][j], dt);
     }
   }
 }
 
 
-void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
-  vector3D F2,Fn,runitario,n,Vc,Vcn,Vct,t,r21 = Grano2.r-Grano1.r;
+void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstoyEnColision, double dt){
+  vector3D F2,Fn,Ft,runitario,n,Vc,Vcn,Vct,t,r21 = Grano2.r-Grano1.r;
   double s,m1,m2,R1,R2,m12,componenteVcn,normaVct,componenteFn;
   double ERFF=1e-8,d21=norma(r21);
   s=Grano1.R+Grano2.R-d21;
@@ -125,7 +139,8 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
     n=r21/d21;
 
     //Calcular velocidad de contacto y el vector tangente
-    Vc=(Grano2.V-Grano1.V); //velocidad del punto de contacto
+    Vc=(Grano2.V-Grano1.V)-(Grano2.omega^n)*R2-(Grano1.omega^n)*R1;  // ^ = prod cruz
+    //velocidad del punto de contacto
                             // -> dividimos en componentes normal y tangencial
     componenteVcn=Vc*n;Vcn=n*componenteVcn; Vct=Vc-Vcn; normaVct=norma(Vct);
     if(normaVct<ERFF) t.cargue(0,0,0);
@@ -139,7 +154,13 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
     if(componenteFn<0) componenteFn=0;
     Fn=n*componenteFn;
 
-    
+    //FUERZAS TANGENCIALES
+    //Fuerza estática
+    ele+=(Vct*dt);
+    Ft=ele*(-Kcundall);
+    //Fuerza cinética
+    Ftmax=MU*normaFn; normaFt=norma(Ft);
+    if(normaFt>Ftmax) Ft=t*(-Ftmax);
     
     F2=Fn;
     Grano1.AgregueFuerza(F2*(-1)); Grano2.AgregueFuerza(F2);
@@ -228,7 +249,7 @@ int main(void){
     for(i=0;i<N;i++){
       Grano[i].Mueva_r(dt, Zeta);
     }
-    Newton.CalculeTodasLasFuerzas(Grano);
+    Newton.CalculeTodasLasFuerzas(Grano, dt);
     
     for(i=0;i<N;i++){
       Grano[i].Mueva_V(dt, (1-2*Lambda)/2);
@@ -237,7 +258,7 @@ int main(void){
       Grano[i].Mueva_r(dt, Xi);
     }
    
-    Newton.CalculeTodasLasFuerzas(Grano);
+    Newton.CalculeTodasLasFuerzas(Grano, dt);
     
     for(i=0;i<N;i++){
       Grano[i].Mueva_V(dt, Lambda);
@@ -245,7 +266,7 @@ int main(void){
     for(i=0;i<N;i++){
       Grano[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
     }
-    Newton.CalculeTodasLasFuerzas(Grano);
+    Newton.CalculeTodasLasFuerzas(Grano, dt);
     
     for(i=0;i<N;i++){
       Grano[i].Mueva_V(dt, Lambda);
@@ -254,7 +275,7 @@ int main(void){
       Grano[i].Mueva_r(dt, Xi);
     }
     
-    Newton.CalculeTodasLasFuerzas(Grano);
+    Newton.CalculeTodasLasFuerzas(Grano, dt);
     
     for(i=0;i<N;i++){
       Grano[i].Mueva_V(dt, (1-2*Lambda)/2);
