@@ -1,6 +1,6 @@
 #include <iostream>
-#include <fstream> //save to file
-#include <cmath> //math functions
+#include <fstream>
+#include <cmath> 
 #include "Vector.h"
 #include "Random64.h"
 
@@ -10,31 +10,6 @@ void Dibujar_esfera(double x, double y, double z, double R){
   cout<<", "<<x<<"+"<<R<<"*sin(u)*cos(v),"<<y<<"+"<<R<<"*sin(u)*sin(v),"<<z<<"+"<<R<<"*cos(u)";
 }
 
-void Dibujar_cilindro(double x, double y, double z, double R){
-
-  cout<<", "<<x<<"+"<<R<<"*cos(v),"<<y<<"+"<<R<<"*sin(v),"<<z<<"+"<<"t(u)";
-}
-
-void Dibujar_cilindro_rot_z(double x, double y, double z, double R, double phi){
-
-  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")"<<"-"<<R<<"*sin(v)*sin("<<phi<<"),"<<y<<"+"<<R<<"*sin(v)*cos("<<phi<<")"<<"+"<<R<<"*cos(v)*sin("<<phi<<"),"<<z<<"+"<<"t(u)";
-}
-
-void Dibujar_cilindro_rot_y(double x, double y, double z, double R, double phi){
-
-  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")"<<"+"<<"t(u)*sin("<<phi<<"),"<<y<<"+"<<R<<"*sin(v),"<<z<<"-"<<R<<"*cos(v)*sin("<<phi<<")"<<"+"<<"t(u)*cos("<<phi<<")";
-}
-
-void Dibujar_cilindro_rot_x(double x, double y, double z, double R, double phi){
-
-  cout<<", "<<x<<"+"<<R<<"*cos(v),"<<y<<"+"<<R<<"*sin(v)*cos("<<phi<<")"<<"-"<<"t(u)*sin("<<phi<<"),"<<z<<"+"<<R<<"*sin(v)*sin("<<phi<<")"<<"+"<<"t(u)*cos("<<phi<<")";
-}
-
-void Dibujar_cilindro_rot_y_z(double x, double y, double z, double R, double phi, double alpha){
-
-  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+"<<"s(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")"<<"+"<<"s(u)*sin("<<phi<<")*sin("<<alpha<<")+"<<R<<"*sin(v)*cos("<<alpha<<"),"<<z<<"-"<<R<<"*cos(v)*sin("<<phi<<")"<<"+"<<"s(u)*cos("<<phi<<")";
-}
-
 void Dibujar_cilindro_rot_y_z_x(double x, double y, double z, double R, double L, double phi, double alpha, double beta){
 
   string s;
@@ -42,6 +17,7 @@ void Dibujar_cilindro_rot_y_z_x(double x, double y, double z, double R, double L
   if(L==14) s="s";
   
   cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*cos("<<beta<<")+"<<R<<"*cos(v)*sin("<<phi<<")*sin("<<beta<<")-cos("<<phi<<")*"<<s<<"(u)*sin("<<beta<<"),"<<z<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*sin("<<beta<<")+sin("<<phi<<")*"<<s<<"(u)*sin("<<alpha<<")*sin("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*sin("<<beta<<")-"<<R<<"*cos(v)*sin("<<phi<<")*cos("<<beta<<")+cos("<<phi<<")*"<<s<<"(u)*cos("<<beta<<")";
+  
 }
 
 void InicieAnimacion(void){
@@ -66,10 +42,6 @@ void InicieAnimacion(void){
 
 void InicieCuadro(void){
   cout<<"splot 0,0,0 ";
-  /*cout<<" , "<<100.1/7<<"*t,0";
-  cout<<" , "<<100.1/7<<"*t,100";
-  cout<<" , 0,"<<100.1/7<<"*t";
-  cout<<" , 100,"<<100.1/7<<"*t";*/
 }
 
 void TermineCuadro(void){
@@ -85,11 +57,6 @@ int main(void){
 
   for (t=0;t<tmax;t+=dt){
       InicieCuadro();
-      
-      /*Dibujar_esfera(a,  a,  a, R);
-      Dibujar_esfera(a, -a, -a, R);
-      Dibujar_esfera(-a, a, -a, R);
-      Dibujar_esfera(-a, -a, a, R);*/
 
       Dibujar_esfera(0,  0,  0, R);
       Dibujar_esfera(a, 0, 0, R);
