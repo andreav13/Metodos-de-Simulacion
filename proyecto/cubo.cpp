@@ -12,9 +12,7 @@ void Dibujar_esfera(double x, double y, double z, double R){
 
 void Dibujar_cilindro_rot_y_z_x(double x, double y, double z, double R, double phi, double alpha, double beta){
 
-  string s="t";
-  
-  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*cos("<<beta<<")+"<<R<<"*cos(v)*sin("<<phi<<")*sin("<<beta<<")-cos("<<phi<<")*"<<s<<"(u)*sin("<<beta<<"),"<<z<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*sin("<<beta<<")+sin("<<phi<<")*"<<s<<"(u)*sin("<<alpha<<")*sin("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*sin("<<beta<<")-"<<R<<"*cos(v)*sin("<<phi<<")*cos("<<beta<<")+cos("<<phi<<")*"<<s<<"(u)*cos("<<beta<<")";
+  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+t(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")"<<"+t(u)*sin("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*cos("<<beta<<")+"<<R<<"*cos(v)*sin("<<phi<<")*sin("<<beta<<")-cos("<<phi<<")*t(u)*sin("<<beta<<"),"<<z<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*sin("<<beta<<")+sin("<<phi<<")*t(u)*sin("<<alpha<<")*sin("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*sin("<<beta<<")-"<<R<<"*cos(v)*sin("<<phi<<")*cos("<<beta<<")+cos("<<phi<<")*t(u)*cos("<<beta<<")";
   
 }
 
@@ -26,21 +24,21 @@ void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
   cout<<"set output '1cubo.gif'"<<endl;
   cout<<"unset key"<<endl;
-  cout<<"set xrange [-2:12]"<<endl;
-  cout<<"set yrange [-2:12]"<<endl;
-  cout<<"set zrange [-2:12]"<<endl;
-  cout<<"set size ratio -1"<<endl;
+  cout<<"set xrange [-60:60]"<<endl;
+  cout<<"set yrange [-60:60]"<<endl;
+  cout<<"set zrange [-60:12]"<<endl;
+  cout<<"set term gif size 1300,700"<<endl;
+  cout<<"set size 1.1,1.1"<<endl;
+  cout<<"set size ratio 1"<<endl;
   cout<<"set view equal xyz"<<endl;
   cout<<"set hidden3d front"<<endl;
-  cout<<"set pm3d depthorder interpolate 0,0"<<endl;
-  cout<<"set palette rgb 3,3,3"<<endl;
   cout<<"set parametric"<<endl;
   cout<<"set urange [0:pi]"<<endl;
   cout<<"set vrange [0:2*pi]"<<endl;
   cout<<"t(u)=10*u/pi"<<endl;
   cout<<"m(u)=u/pi"<<endl;
   cout<<"n(v)=v/(2*pi)"<<endl;
-  cout<<"set isosamples 20"<<endl;
+  cout<<"set isosamples 8,8"<<endl;
 }
 
 void InicieCuadro(void){
@@ -54,13 +52,15 @@ void TermineCuadro(void){
 int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
-  double a=10, R=1, sqrt2=pow(2,0.5);
+  double a=10, L=100., R=1, sqrt2=pow(2,0.5);
 
   InicieAnimacion();
 
   for (t=0;t<tmax;t+=dt){
       InicieCuadro();
 
+      //DIBUJA CUBO
+      
       Dibujar_esfera(0,  0,  0, R);
       Dibujar_esfera(a, 0, 0, R);
       Dibujar_esfera(0, a, 0, R);
@@ -90,6 +90,10 @@ int main(void){
       Dibujar_plano(0,0,a+R, a,0,a+R, 0,a,a+R);
       Dibujar_plano(a+R,0,0, a+R,0,a, a+R,a,0);
       Dibujar_plano(0,a+R,0, a,a+R,0, 0,a+R,a);
+
+      //DIBUJA PLANO
+
+      Dibujar_plano(-L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2);
       
       TermineCuadro();
   }
