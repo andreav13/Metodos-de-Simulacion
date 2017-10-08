@@ -1,0 +1,55 @@
+#include <iostream>
+#include <fstream> //save to file
+#include <cmath> //math functions
+#include "Vector.h"
+#include "Random64.h"
+
+using namespace std;
+
+void Dibujese(double x, double y, double R){
+  //cout<<", "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t) , "
+  //  <<r.x()<<"+"<<R*cos(theta)/7.0<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7.0<<"*t";
+
+  cout<<", "<<x<<"+"<<R<<"*cos(t),"<<y<<"+"<<R<<"*sin(t)";
+}
+
+void InicieAnimacion(void){
+  cout<<"set terminal gif animate"<<endl;
+  cout<<"set output 'prueba1.gif'"<<endl;
+  cout<<"unset key"<<endl;
+  cout<<"set xrange [-10:110]"<<endl;
+  cout<<"set yrange [-10:110]"<<endl;
+  cout<<"set size ratio -1"<<endl;
+  cout<<"set parametric"<<endl;
+  cout<<"set trange [0:7]"<<endl;
+  cout<<"set isosamples 12"<<endl;
+}
+
+void InicieCuadro(void){
+  cout<<"plot 0,0 ";
+  cout<<" , "<<100.1/7<<"*t,0";
+  cout<<" , "<<100.1/7<<"*t,100";
+  cout<<" , 0,"<<100.1/7<<"*t";
+  cout<<" , 100,"<<100.1/7<<"*t";
+}
+
+void TermineCuadro(void){
+  cout<<endl;
+}
+
+int main(void){
+
+  double t, dt=1e-3, tmax=40;
+  double x=1, y=3, R=6;
+
+  InicieAnimacion();
+
+  for (t=0;t<tmax;t+=dt){
+      InicieCuadro();
+      Dibujese(x, y, R);
+      TermineCuadro();
+  }
+  
+  return 0;
+
+}
