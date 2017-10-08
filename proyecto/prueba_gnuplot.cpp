@@ -20,6 +20,10 @@ void Dibujar_cilindro_rot_y_z_x(double x, double y, double z, double R, double L
   
 }
 
+void Dibujar_triangulo(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3){
+  cout<<", "<<a1<<"+m(u)*("<<b1<<"-"<<a1<<")+n(v)*("<<c1<<"-"<<a1<<"),"<<a2<<"+m(u)*("<<b2<<"-"<<a2<<")+n(v)*("<<c2<<"-"<<a2<<"),"<<a3<<"+m(u)*("<<b3<<"-"<<a3<<")+n(v)*("<<c3<<"-"<<a3<<")";
+}
+
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
   cout<<"set output 'prueba1.gif'"<<endl;
@@ -37,6 +41,8 @@ void InicieAnimacion(void){
   cout<<"set vrange [0:2*pi]"<<endl;
   cout<<"t(u)=10*u/pi"<<endl;
   cout<<"s(u)=14.14213562*u/pi"<<endl;
+  cout<<"m(u)=u/pi"<<endl;
+  cout<<"n(v)=v/(2*pi)"<<endl;
   cout<<"set isosamples 20"<<endl;
 }
 
@@ -51,7 +57,7 @@ void TermineCuadro(void){
 int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
-  double a=10, R=1, L1=10, L2=14;
+  double a=10, R=1, L1=10, L2=14, sqrt2=pow(2,0.5);
 
   InicieAnimacion();
 
@@ -69,6 +75,11 @@ int main(void){
       Dibujar_cilindro_rot_y_z_x(0, a, 0, R, L2, M_PI/2, -M_PI/4, 0);
       Dibujar_cilindro_rot_y_z_x(0, a, 0, R, L2, 0, -M_PI/4, M_PI/4);
       Dibujar_cilindro_rot_y_z_x(a, 0, 0, R, L2, -M_PI/4, 0, 0);
+
+      Dibujar_triangulo(-R,0,0, -R,a,0, -R,0,a);
+      Dibujar_triangulo(0,0,-R, 0,a,-R, a,0,-R);
+      Dibujar_triangulo(0,-R,0, a,-R,0, 0,-R,a);
+      Dibujar_triangulo(a,R/sqrt2,R/sqrt2, R/sqrt2,a,R/sqrt2, R/sqrt2,R/sqrt2,a);
       
       TermineCuadro();
   }
