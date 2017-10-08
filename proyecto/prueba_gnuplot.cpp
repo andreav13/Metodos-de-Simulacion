@@ -35,6 +35,15 @@ void Dibujar_cilindro_rot_y_z(double x, double y, double z, double R, double phi
   cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+"<<"s(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")"<<"+"<<"s(u)*sin("<<phi<<")*sin("<<alpha<<")+"<<R<<"*sin(v)*cos("<<alpha<<"),"<<z<<"-"<<R<<"*cos(v)*sin("<<phi<<")"<<"+"<<"s(u)*cos("<<phi<<")";
 }
 
+void Dibujar_cilindro_rot_y_z_x(double x, double y, double z, double R, double L, double phi, double alpha, double beta){
+
+  string s;
+  if(L==10) s="t";
+  if(L==14) s="s";
+  
+  cout<<", "<<x<<"+"<<R<<"*cos(v)*cos("<<phi<<")*cos("<<alpha<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*cos("<<alpha<<")-"<<R<<"*sin(v)*sin("<<alpha<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")"<<"+"<<s<<"(u)*sin("<<phi<<")*sin("<<alpha<<")*cos("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*cos("<<beta<<")+"<<R<<"*cos(v)*sin("<<phi<<")*sin("<<beta<<")-cos("<<phi<<")*"<<s<<"(u)*sin("<<beta<<"),"<<z<<"+"<<R<<"*cos(v)*cos("<<phi<<")*sin("<<alpha<<")*sin("<<beta<<")+sin("<<phi<<")*"<<s<<"(u)*sin("<<alpha<<")*sin("<<beta<<")+"<<R<<"*sin(v)*cos("<<alpha<<")*sin("<<beta<<")-"<<R<<"*cos(v)*sin("<<phi<<")*cos("<<beta<<")+cos("<<phi<<")*"<<s<<"(u)*cos("<<beta<<")";
+}
+
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
   cout<<"set output 'prueba1.gif'"<<endl;
@@ -70,7 +79,7 @@ void TermineCuadro(void){
 int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
-  double a=10, R=1, L=sqrt(2*20*20);
+  double a=10, R=1, L1=10, L2=14;
 
   InicieAnimacion();
 
@@ -87,11 +96,12 @@ int main(void){
       Dibujar_esfera(0, a, 0, R);
       Dibujar_esfera(0, 0, a, R);
 
-      //Dibujar_cilindro(0, 0, 0, R);
-      Dibujar_cilindro_rot_z(0, 0, 0, R, M_PI/3);
-      Dibujar_cilindro_rot_y(0, 0, 0, R, M_PI/2);
-      Dibujar_cilindro_rot_x(0, 0, 0, R, -M_PI/2);
-      Dibujar_cilindro_rot_y_z(0, a, 0, R, M_PI/2, -M_PI/4);
+      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, L1, 0, 0, 0);
+      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, L1, M_PI/2, 0, 0);
+      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, L1, 0, 0, -M_PI/2);
+      Dibujar_cilindro_rot_y_z_x(0, a, 0, R, L2, M_PI/2, -M_PI/4, 0);
+      Dibujar_cilindro_rot_y_z_x(0, a, 0, R, L2, 0, -M_PI/4, M_PI/4);
+      Dibujar_cilindro_rot_y_z_x(a, 0, 0, R, L2, -M_PI/4, 0, 0);
       
       TermineCuadro();
   }
