@@ -6,10 +6,7 @@
 
 using namespace std;
 
-void Dibujar_circulo(double x, double y, double z, double R){
-  //cout<<", "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t) , "
-  //  <<r.x()<<"+"<<R*cos(theta)/7.0<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7.0<<"*t";
-
+void Dibujar_esfera(double x, double y, double z, double R){
   cout<<", "<<x<<"+"<<R<<"*sin(u)*cos(v),"<<y<<"+"<<R<<"*sin(u)*sin(v),"<<z<<"+"<<R<<"*cos(u)";
 }
 
@@ -80,15 +77,15 @@ int main(void){
   for (t=0;t<tmax;t+=dt){
       InicieCuadro();
       
-      /*Dibujar_circulo(a,  a,  a, R);
-      Dibujar_circulo(a, -a, -a, R);
-      Dibujar_circulo(-a, a, -a, R);
-      Dibujar_circulo(-a, -a, a, R);*/
+      /*Dibujar_esfera(a,  a,  a, R);
+      Dibujar_esfera(a, -a, -a, R);
+      Dibujar_esfera(-a, a, -a, R);
+      Dibujar_esfera(-a, -a, a, R);*/
 
-      Dibujar_circulo(0,  0,  0, R);
-      Dibujar_circulo(a, 0, 0, R);
-      Dibujar_circulo(0, a, 0, R);
-      Dibujar_circulo(0, 0, a, R);
+      Dibujar_esfera(0,  0,  0, R);
+      Dibujar_esfera(a, 0, 0, R);
+      Dibujar_esfera(0, a, 0, R);
+      Dibujar_esfera(0, 0, a, R);
 
       //Dibujar_cilindro(0, 0, 0, R);
       Dibujar_cilindro_rot_z(0, 0, 0, R, M_PI/3);
