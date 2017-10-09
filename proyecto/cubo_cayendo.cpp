@@ -221,7 +221,7 @@ int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
   Cuerpo parte[27];
-  //Colisionador Choque;
+  //Colisionador Newton;
   Crandom ran64(1);
 
   double me=1,mc=1,mp=1,mp_grande=1000;
