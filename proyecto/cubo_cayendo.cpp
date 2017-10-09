@@ -41,7 +41,7 @@ public:
 
 
 //Clase Colisionador
-class Colisionador{
+/*class Colisionador{
 private:
   vector3D ele[N+4][N+4];
   bool EstoyEnColision[N+4][N+4];
@@ -49,14 +49,14 @@ public:
   void Inicie(void);
   void CalculeTodasLasFuerzas(Cuerpo* Grano, double dt);
   void CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstoyEnColision, double dt);
-};
+  };*/
   
 //Funciones de la clase cuerpo
 void Cuerpo::Inicie(double x0, double y0, double z0, double phi0, double alpha0, double beta0, double a10, double a20, double a30, double b10, double b20, double b30,  double c10, double c20, double c30, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double I0){
   r.cargue(x0,y0,z0);
   rot.cargue(phi0,alpha0,beta0);
   a.cargue(a10,a20,a30);
-  b.cargue(b10,b20,b3);
+  b.cargue(b10,b20,b30);
   c.cargue(c10,c20,c30);
   V.cargue(Vx0,Vy0,Vz0);
   theta=theta0;
@@ -96,7 +96,7 @@ void Cuerpo::Dibujar_esfera(void){
 }
 
 void Cuerpo::Dibujar_cilindro(void){
-  cout<<", "<<r.x()<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*cos("<<rot.y()<<")"<<"+t(u)*sin("<<rot.x()<<")*cos("<<rot.y()<<")-"<<R<<"*sin(v)*sin("<<rot.y()<<"),"<<y<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*sin("<<rot.y()<<")*cos("<<rot.z()<<")"<<"+t(u)*sin("<<rot.x()<<")*sin("<<rot.y()<<")*cos("<<rot.z()<<")+"<<R<<"*sin(v)*cos("<<rot.y()<<")*cos("<<rot.z()<<")+"<<R<<"*cos(v)*sin("<<rot.x()<<")*sin("<<rot.z()<<")-cos("<<rot.x()<<")*t(u)*sin("<<rot.z()<<"),"<<z<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*sin("<<rot.y()<<")*sin("<<rot.z()<<")+sin("<<rot.x()<<")*t(u)*sin("<<rot.y()<<")*sin("<<rot.z()<<")+"<<R<<"*sin(v)*cos("<<rot.y()<<")*sin("<<rot.z()<<")-"<<R<<"*cos(v)*sin("<<rot.x()<<")*cos("<<rot.z()<<")+cos("<<rot.x()<<")*t(u)*cos("<<rot.z()<<")";
+  cout<<", "<<r.x()<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*cos("<<rot.y()<<")"<<"+t(u)*sin("<<rot.x()<<")*cos("<<rot.y()<<")-"<<R<<"*sin(v)*sin("<<rot.y()<<"),"<<r.y()<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*sin("<<rot.y()<<")*cos("<<rot.z()<<")"<<"+t(u)*sin("<<rot.x()<<")*sin("<<rot.y()<<")*cos("<<rot.z()<<")+"<<R<<"*sin(v)*cos("<<rot.y()<<")*cos("<<rot.z()<<")+"<<R<<"*cos(v)*sin("<<rot.x()<<")*sin("<<rot.z()<<")-cos("<<rot.x()<<")*t(u)*sin("<<rot.z()<<"),"<<r.z()<<"+"<<R<<"*cos(v)*cos("<<rot.x()<<")*sin("<<rot.y()<<")*sin("<<rot.z()<<")+sin("<<rot.x()<<")*t(u)*sin("<<rot.y()<<")*sin("<<rot.z()<<")+"<<R<<"*sin(v)*cos("<<rot.y()<<")*sin("<<rot.z()<<")-"<<R<<"*cos(v)*sin("<<rot.x()<<")*cos("<<rot.z()<<")+cos("<<rot.x()<<")*t(u)*cos("<<rot.z()<<")";
 }
 
 void Cuerpo::Dibujar_plano(void){
@@ -105,7 +105,7 @@ void Cuerpo::Dibujar_plano(void){
 
 
 //Funciones de la clase colisionador
-
+/*
 void Colisionador::Inicie(void){
   int i,j;
   for(i=0;i<N;i++){
@@ -184,7 +184,7 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector
     ele.cargue(0,0,0); EstoyEnColision=false;
   }
   
-}
+}*/
 
 
 
@@ -221,7 +221,7 @@ int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
   Cuerpo parte[27];
-  Colisionador Choque;
+  //Colisionador Choque;
   Crandom ran64(1);
 
   double me=1,mc=1,mp=1,mp_grande=10;
@@ -257,14 +257,14 @@ int main(void){
   parte[19].Inicie(A,0,A,0,0,-M_PI/2,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
 
   //PLANOS
-  parte[20].Inicie(0,0,0,0,0,0, -R,0,0, -R,a,0, -R,0,a, V,0,0,theta0,omega0,mp,Ip)
-  parte[21].Inicie(0,0,0,0,0,0, 0,0,-R, 0,a,-R, a,0,-R, V,0,0,theta0,omega0,mp,Ip)
-  parte[22].Inicie(0,0,0,0,0,0, 0,-R,0, a,-R,0, 0,-R,a, V,0,0,theta0,omega0,mp,Ip)
-  parte[23].Inicie(0,0,0,0,0,0, 0,0,a+R, a,0,a+R, 0,a,a+R, V,0,0,theta0,omega0,mp,Ip)
-  parte[24].Inicie(0,0,0,0,0,0, a+R,0,0, a+R,0,a, a+R,a,0, V,0,0,theta0,omega0,mp,Ip)
-  parte[25].Inicie(0,0,0,0,0,0, 0,a+R,0, a,a+R,0, 0,a+R,a, V,0,0,theta0,omega0,mp,Ip)
+  parte[20].Inicie(0,0,0,0,0,0, -R,0,0, -R,A,0, -R,0,A, V,0,0,theta0,omega0,mp,Ip);
+  parte[21].Inicie(0,0,0,0,0,0, 0,0,-R, 0,A,-R, A,0,-R, V,0,0,theta0,omega0,mp,Ip);
+  parte[22].Inicie(0,0,0,0,0,0, 0,-R,0, A,-R,0, 0,-R,A, V,0,0,theta0,omega0,mp,Ip);
+  parte[23].Inicie(0,0,0,0,0,0, 0,0,A+R, A,0,A+R, 0,A,A+R, V,0,0,theta0,omega0,mp,Ip);
+  parte[24].Inicie(0,0,0,0,0,0, A+R,0,0, A+R,0,A, A+R,A,0, V,0,0,theta0,omega0,mp,Ip);
+  parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,0,0,theta0,omega0,mp,Ip);
 
-  parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande)
+  parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande);
   
   
   for (t=0;t<tmax;t+=dt){
