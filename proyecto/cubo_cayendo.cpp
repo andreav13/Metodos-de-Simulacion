@@ -24,7 +24,7 @@ private:
   double m,R,theta,I;
   
 public:
-  void Inicie(double x0, double y0, double z0, double phi0, double alpha0, double beta0, double a10, double a20, double a30, double b10, double b20, double b30,  double c10, double c20, double c30, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double R0);
+  void Inicie(double x0, double y0, double z0, double phi0, double alpha0, double beta0, double a10, double a20, double a30, double b10, double b20, double b30,  double c10, double c20, double c30, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double I0);
   void BorreFuerzayTorque(void);
   void AgregueFuerza(vector3D F0);
   void AgregueTorque(vector3D tau0);
@@ -52,7 +52,7 @@ public:
 };
   
 //Funciones de la clase cuerpo
-void Cuerpo::Inicie(double x0, double y0, double z0, double phi0, double alpha0, double beta0, double a10, double a20, double a30, double b10, double b20, double b30,  double c10, double c20, double c30, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double R0){
+void Cuerpo::Inicie(double x0, double y0, double z0, double phi0, double alpha0, double beta0, double a10, double a20, double a30, double b10, double b20, double b30,  double c10, double c20, double c30, double Vx0, double Vy0, double Vz0,double theta0, double omega0, double m0, double I0){
   r.cargue(x0,y0,z0);
   rot.cargue(phi0,alpha0,beta0);
   a.cargue(a10,a20,a30);
@@ -61,7 +61,7 @@ void Cuerpo::Inicie(double x0, double y0, double z0, double phi0, double alpha0,
   V.cargue(Vx0,Vy0,Vz0);
   theta=theta0;
   omega.cargue(0,0,omega0);
-  m=m0; R=R0; I=m*a*a/6.;
+  m=m0; I=I0;
 }
 
 
@@ -220,60 +220,57 @@ void TermineCuadro(void){
 int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
-  Cuerpo parte[26];
+  Cuerpo parte[27];
   Colisionador Choque;
   Crandom ran64(1);
 
-  double m0=1, V=10, theta0=M_PI, omega0=10;
+  double me=1,mc=1,mp=1,mp_grande=10;
+  double Ie=2/5.*me*R*R, Ic=1/2.*mc*R*R, Ip=1/6.*mp*A*A, Ip_grande=1/6.*mp_grande*A*A;
+  double V=10, theta0=M_PI, omega0=10;
   
   InicieAnimacion();
 
-  //x0, y0, z0,   phi0,   alpha0,   beta0,   a10,   a20,   a30,   b10,   b20,   b30,    c10,   c20,   c30,   Vx0,   Vy0,   Vz0,  theta0,   omega0,   m0,   R0
+  //x0, y0, z0,   phi0,   alpha0,   beta0,   a10,   a20,   a30,   b10,   b20,   b30,    c10,   c20,   c30,   Vx0,   Vy0,   Vz0,  theta0,   omega0,   m0,  I
 
   //ESFERAS
-  parte[0].Inicie(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[1].Inicie(A,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[2].Inicie(0,A,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[3].Inicie(0,0,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[4].Inicie(0,A,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[5].Inicie(A,0,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[6].Inicie(A,A,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-  parte[7].Inicie(A,A,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,m0,R);
-
+  parte[0].Inicie(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[1].Inicie(A,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[2].Inicie(0,A,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[3].Inicie(0,0,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[4].Inicie(0,A,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[5].Inicie(A,0,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[6].Inicie(A,A,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  parte[7].Inicie(A,A,A,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,me,Ie);
+  
   //CILINDROS
-  parte[8].Inicie();
+  parte[8].Inicie( 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[9].Inicie( 0,0,0,M_PI/2,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[10].Inicie(0,0,0,0,0,-M_PI/2,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[11].Inicie(0,A,0,M_PI/2,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[12].Inicie(0,A,0,0,M_PI/2,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[13].Inicie(A,0,0,0,0,-M_PI/2,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[14].Inicie(A,0,0,0,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[15].Inicie(0,0,A,M_PI/2,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[16].Inicie(0,0,A,0,0,-M_PI/2,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[17].Inicie(A,A,0,0,M_PI/2,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[18].Inicie(0,A,A,M_PI/2,0,0,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+  parte[19].Inicie(A,0,A,0,0,-M_PI/2,0,0,0,0,0,0,0,0,0,V,0,0,theta0,omega0,mc,Ic);
+
+  //PLANOS
+  parte[20].Inicie(0,0,0,0,0,0, -R,0,0, -R,a,0, -R,0,a, V,0,0,theta0,omega0,mp,Ip)
+  parte[21].Inicie(0,0,0,0,0,0, 0,0,-R, 0,a,-R, a,0,-R, V,0,0,theta0,omega0,mp,Ip)
+  parte[22].Inicie(0,0,0,0,0,0, 0,-R,0, a,-R,0, 0,-R,a, V,0,0,theta0,omega0,mp,Ip)
+  parte[23].Inicie(0,0,0,0,0,0, 0,0,a+R, a,0,a+R, 0,a,a+R, V,0,0,theta0,omega0,mp,Ip)
+  parte[24].Inicie(0,0,0,0,0,0, a+R,0,0, a+R,0,a, a+R,a,0, V,0,0,theta0,omega0,mp,Ip)
+  parte[25].Inicie(0,0,0,0,0,0, 0,a+R,0, a,a+R,0, 0,a+R,a, V,0,0,theta0,omega0,mp,Ip)
+
+  parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande)
   
   
   for (t=0;t<tmax;t+=dt){
       InicieCuadro();
-    
-
-
-
-      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, 0, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, M_PI/2, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(0, 0, 0, R, 0, 0, -M_PI/2);
-      Dibujar_cilindro_rot_y_z_x(0, a, 0, R, M_PI/2, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(0, a, 0, R, 0, M_PI/2, 0);
-      Dibujar_cilindro_rot_y_z_x(a, 0, 0, R, 0, 0, -M_PI/2);
-      
-      Dibujar_cilindro_rot_y_z_x(a, 0, 0, R, 0, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(0, 0, a, R, M_PI/2, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(0, 0, a, R, 0, 0, -M_PI/2);
-      Dibujar_cilindro_rot_y_z_x(a, a, 0, R, 0, M_PI/2, 0);
-      Dibujar_cilindro_rot_y_z_x(0, a, a, R, M_PI/2, 0, 0);
-      Dibujar_cilindro_rot_y_z_x(a, 0, a, R, 0, 0, -M_PI/2);
-
-      Dibujar_plano(-R,0,0, -R,a,0, -R,0,a);
-      Dibujar_plano(0,0,-R, 0,a,-R, a,0,-R);
-      Dibujar_plano(0,-R,0, a,-R,0, 0,-R,a);
-      Dibujar_plano(0,0,a+R, a,0,a+R, 0,a,a+R);
-      Dibujar_plano(a+R,0,0, a+R,0,a, a+R,a,0);
-      Dibujar_plano(0,a+R,0, a,a+R,0, 0,a+R,a);
-
-      //DIBUJA PLANO
-
-      Dibujar_plano(-L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2);
+ 
+      //DIBUJARRRRR
       
       TermineCuadro();
   }
