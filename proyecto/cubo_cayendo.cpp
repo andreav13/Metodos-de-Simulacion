@@ -224,7 +224,7 @@ int main(void){
   //Colisionador Choque;
   Crandom ran64(1);
 
-  double me=1,mc=1,mp=1,mp_grande=10;
+  double me=1,mc=1,mp=1,mp_grande=1000;
   double Ie=2/5.*me*R*R, Ic=1/2.*mc*R*R, Ip=1/6.*mp*A*A, Ip_grande=1/6.*mp_grande*L*L;
   double V=10, theta0=M_PI, omega0=10;
   
