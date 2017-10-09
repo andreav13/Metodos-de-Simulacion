@@ -178,7 +178,7 @@ void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector
 
 void InicieAnimacion(void){
   cout<<"set terminal gif animate"<<endl;
-  cout<<"set output 'grano_rebota_y_gira.gif'"<<endl;
+  cout<<"set output 'prueba.gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange [-10:110]"<<endl;
   cout<<"set yrange [-10:110]"<<endl;
