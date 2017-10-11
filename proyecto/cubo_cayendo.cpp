@@ -9,6 +9,7 @@ using namespace std;
 const double A=10., L=100., R=1.;
 const double K=1e4, Gamma=50, Kcundall=10, MU=0.4;
 const double g=9.8;
+const int N=27;
 
 const double Zeta=0.1786178958448091;
 const double Lambda=-0.2123418310626054;
@@ -81,6 +82,9 @@ void Cuerpo::AgregueTorque(vector3D tau0){
 
 void Cuerpo::Mueva_r(double dt, double Constante){
   r+=V*(Constante*dt);
+  a+=V*(Constante*dt);
+  b+=V*(Constante*dt);
+  c+=V*(Constante*dt);
   theta+=omega.z()*Constante*dt;
 }
 
@@ -197,7 +201,7 @@ void InicieAnimacion(void){
   cout<<"set zrange [-60:12]"<<endl;
   cout<<"set term gif size 900,700"<<endl;
   cout<<"set size 1.1,1.1"<<endl;
-  cout<<"set size ratio 1"<<endl;
+  cout<<"set size ratio -1"<<endl;
   cout<<"set view equal xyz"<<endl;
   cout<<"set hidden3d front"<<endl;
   cout<<"set parametric"<<endl;
@@ -206,7 +210,7 @@ void InicieAnimacion(void){
   cout<<"t(u)=10*u/pi"<<endl;
   cout<<"m(u)=u/pi"<<endl;
   cout<<"n(v)=v/(2*pi)"<<endl;
-  cout<<"set isosamples 8,8"<<endl;
+  cout<<"set isosamples 8"<<endl;
 }
 
 void InicieCuadro(void){
@@ -220,15 +224,19 @@ void TermineCuadro(void){
 int main(void){
 
   double t, dt=1e-3, tmax=3*dt;
-  Cuerpo parte[27];
+  int Ndibujos;
+  double tdibujo;
+  Cuerpo parte[N];
   //Colisionador Newton;
   Crandom ran64(1);
 
   double me=1,mc=1,mp=1,mp_grande=1000;
   double Ie=2/5.*me*R*R, Ic=1/2.*mc*R*R, Ip=1/6.*mp*A*A, Ip_grande=1/6.*mp_grande*L*L;
-  double V=10, theta0=M_PI, omega0=10;
-  
+  double V=0, Vy=100000, theta0=M_PI, omega0=10;
+
+  Ndibujos=3000;
   InicieAnimacion();
+  
 
   //Inicio de cuerpos
   //x0, y0, z0,   phi0, alpha0, beta0,
@@ -236,89 +244,96 @@ int main(void){
   //Vx0,   Vy0,   Vz0,  theta0,   omega0,   m0,  I
 
   //ESFERAS
-  parte[0].Inicie(0,0,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[1].Inicie(A,0,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[2].Inicie(0,A,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[3].Inicie(0,0,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[4].Inicie(0,A,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[5].Inicie(A,0,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[6].Inicie(A,A,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
-  parte[7].Inicie(A,A,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,me,Ie);
+  parte[0].Inicie(0,0,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[1].Inicie(A,0,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[2].Inicie(0,A,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[3].Inicie(0,0,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[4].Inicie(0,A,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[5].Inicie(A,0,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[6].Inicie(A,A,0, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
+  parte[7].Inicie(A,A,A, 0,0,0, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,me,Ie);
   
   //CILINDROS
-  parte[8].Inicie( 0,0,0, 0,0,0,       0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[9].Inicie( 0,0,0, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[10].Inicie(0,0,0, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[11].Inicie(0,A,0, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[12].Inicie(0,A,0, 0,M_PI/2,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[13].Inicie(A,0,0, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[14].Inicie(A,0,0, 0,0,0,       0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[15].Inicie(0,0,A, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[16].Inicie(0,0,A, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[17].Inicie(A,A,0, 0,M_PI/2,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[18].Inicie(0,A,A, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
-  parte[19].Inicie(A,0,A, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,0,0,theta0,omega0,mc,Ic);
+  parte[8].Inicie( 0,0,0, 0,0,0,       0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[9].Inicie( 0,0,0, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[10].Inicie(0,0,0, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[11].Inicie(0,A,0, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[12].Inicie(0,A,0, 0,M_PI/2,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[13].Inicie(A,0,0, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[14].Inicie(A,0,0, 0,0,0,       0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[15].Inicie(0,0,A, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[16].Inicie(0,0,A, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[17].Inicie(A,A,0, 0,M_PI/2,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[18].Inicie(0,A,A, M_PI/2,0,0,  0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
+  parte[19].Inicie(A,0,A, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
 
   //PLANOS
-  parte[20].Inicie(0,0,0,0,0,0, -R,0,0,  -R,A,0,  -R,0,A,  V,0,0,theta0,omega0,mp,Ip);
-  parte[21].Inicie(0,0,0,0,0,0, 0,0,-R,  0,A,-R,  A,0,-R,  V,0,0,theta0,omega0,mp,Ip);
-  parte[22].Inicie(0,0,0,0,0,0, 0,-R,0,  A,-R,0,  0,-R,A,  V,0,0,theta0,omega0,mp,Ip);
-  parte[23].Inicie(0,0,0,0,0,0, 0,0,A+R, A,0,A+R, 0,A,A+R, V,0,0,theta0,omega0,mp,Ip);
-  parte[24].Inicie(0,0,0,0,0,0, A+R,0,0, A+R,0,A, A+R,A,0, V,0,0,theta0,omega0,mp,Ip);
-  parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,0,0,theta0,omega0,mp,Ip);
+  parte[20].Inicie(0,0,0,0,0,0, -R,0,0,  -R,A,0,  -R,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[21].Inicie(0,0,0,0,0,0, 0,0,-R,  0,A,-R,  A,0,-R,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[22].Inicie(0,0,0,0,0,0, 0,-R,0,  A,-R,0,  0,-R,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[23].Inicie(0,0,0,0,0,0, 0,0,A+R, A,0,A+R, 0,A,A+R, V,Vy,0,theta0,omega0,mp,Ip);
+  parte[24].Inicie(0,0,0,0,0,0, A+R,0,0, A+R,0,A, A+R,A,0, V,Vy,0,theta0,omega0,mp,Ip);
+  parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,Vy,0,theta0,omega0,mp,Ip);
 
   parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande);
   
-
+int i;
   //Dibuja cubo y plano
-  for (t=0;t<tmax;t+=dt){
+  for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
+    if (tdibujo>tmax/Ndibujos){
+      
       InicieCuadro();
  
-      int i;
       for(i=0;i<8;i++) parte[i].Dibujar_esfera();
       for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
-      for(i=20;i<27;i++) parte[i].Dibujar_plano();
+      for(i=20;i<N;i++) parte[i].Dibujar_plano();
       
       TermineCuadro();
-
+      tdibujo=0;
+      
+    }
 
       //Muevase con Omelyan FR.
-      /*for(i=0;i<N;i++){
-      Grano[i].Mueva_r(dt, Zeta);
+      for(i=0;i<N;i++){
+	parte[i].Mueva_r(dt, Zeta);
       }
-      Newton.CalculeTodasLasFuerzas(Grano, dt);
+
+      //cout<<parte[8].Getx()<<endl;
+      /*
+
+      Newton.CalculeTodasLasFuerzas(parte, dt);
     
       for(i=0;i<N;i++){
-        Grano[i].Mueva_V(dt, (1-2*Lambda)/2);
+        parte[i].Mueva_V(dt, (1-2*Lambda)/2);
       }
       for(i=0;i<N;i++){
-        Grano[i].Mueva_r(dt, Xi);
+        parte[i].Mueva_r(dt, Xi);
       }
    
-      Newton.CalculeTodasLasFuerzas(Grano, dt);
+      Newton.CalculeTodasLasFuerzas(parte, dt);
     
       for(i=0;i<N;i++){
-        Grano[i].Mueva_V(dt, Lambda);
+        parte[i].Mueva_V(dt, Lambda);
       }
       for(i=0;i<N;i++){
-        Grano[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
+        parte[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
       }
-      Newton.CalculeTodasLasFuerzas(Grano, dt);
+      Newton.CalculeTodasLasFuerzas(parte, dt);
     
       for(i=0;i<N;i++){
-        Grano[i].Mueva_V(dt, Lambda);
+        parte[i].Mueva_V(dt, Lambda);
       }
       for(i=0;i<N;i++){
-        Grano[i].Mueva_r(dt, Xi);
+        parte[i].Mueva_r(dt, Xi);
       }
     
-      Newton.CalculeTodasLasFuerzas(Grano, dt);
+      Newton.CalculeTodasLasFuerzas(parte, dt);
     
       for(i=0;i<N;i++){
-        Grano[i].Mueva_V(dt, (1-2*Lambda)/2);
+        parte[i].Mueva_V(dt, (1-2*Lambda)/2);
       }
       for(i=0;i<N;i++){
-        Grano[i].Mueva_r(dt, Zeta);
+        parte[i].Mueva_r(dt, Zeta);
       }*/
 
       
