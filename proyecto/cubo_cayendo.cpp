@@ -204,10 +204,10 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo & Grano1, Cuerpo & Grano2, 
     //cout<<s<<endl;
     //Geometria y dinamica del contacto
     m1=Grano1.m; m2=Grano2.m; m12=(m1*m2)/(m1+m2);
-    n.cargue(0,0,1);
+    n.cargue(0,0,-1);
 
     //Calcular velocidad de contacto y el vector tangente
-    Vc=-1*Grano1.V; 
+    Vc=Grano1.V; 
     //velocidad del punto de contacto
     componenteVcn=Vc*n;Vcn=n*componenteVcn;
     
@@ -215,7 +215,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo & Grano1, Cuerpo & Grano2, 
     //Fuerza de Hertz
     componenteFn=K*pow(s,1.5);
     //Disipación Plástica
-    componenteFn-=m12*sqrt(s)*Gamma*componenteVcn;
+    //componenteFn-=m12*sqrt(s)*Gamma*componenteVcn;
     if(componenteFn<0) componenteFn=0;
     Fn=n*componenteFn;
     
@@ -260,7 +260,7 @@ void TermineCuadro(void){
 
 int main(void){
 
-  double t, dt=4, tmax=3*dt;
+  double t, dt=1e-3, tmax=12;
   int Ndibujos;
   double tdibujo;
   Cuerpo parte[N];
