@@ -235,7 +235,7 @@ void InicieAnimacion(void){
   cout<<"set xrange [-60:60]"<<endl;
   cout<<"set yrange [-60:60]"<<endl;
   cout<<"set zrange [-60:12]"<<endl;
-  cout<<"set term gif size 900,700"<<endl;
+  //cout<<"set term gif size 900,700"<<endl;
   cout<<"set size 1.1,1.1"<<endl;
   cout<<"set size ratio -1"<<endl;
   cout<<"set view equal xyz"<<endl;
