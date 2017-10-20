@@ -270,7 +270,7 @@ int main(void){
   double Ie=2/5.*me*R*R, Ic=1/2.*mc*R*R, Ip=1/6.*mp*A*A, Ip_grande=1/6.*mp_grande*L*L;
   double V=0, Vy=0, theta0=M_PI, omega0=10;
 
-  Ndibujos=3000;
+  Ndibujos=300;
   InicieAnimacion();
   
 
