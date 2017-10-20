@@ -8,7 +8,7 @@ using namespace std;
 
 const double A=10., L=100., R=1.;
 const double K=1e4, Gamma=50, Kcundall=10;
-const double g=9.8;
+const double g=9.8, h=A/2.;
 const int N=27;
 
 const double Zeta=0.1786178958448091;
@@ -40,7 +40,10 @@ public:
   void Dibujar_esfera(void);
   void Dibujar_cilindro(void);
   void Dibujar_plano(void);
-  void Rotar_plano(double theta, double h, double k);
+  void Rotar_esfera(double theta, double phi);
+  void Rotar_cilindro1(double theta, double phi);
+  void Rotar_cilindro2(double theta, double phi);
+  void Rotar_plano(double theta, double phi);
   friend class Colisionador;
 };
 
@@ -113,26 +116,92 @@ void Cuerpo::Dibujar_plano(void){
 }
 
 
+void Cuerpo::Rotar_esfera(double theta, double phi){
+  double r1,r2,r3;
 
-void Cuerpo::Rotar_plano(double theta, double h, double k){
+  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r3=r.z();
+  r.cargue(r1,r2,r3);
+
+  r1=r.x();
+  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
+  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r.cargue(r1,r2,r3);
+
+}
+
+void Cuerpo::Rotar_cilindro1(double theta, double phi){
+  double r1,r2,r3;
+
+  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r3=r.z();
+  r.cargue(r1,r2,r3);
+
+
+  r1=r.x();
+  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
+  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r.cargue(r1,r2,r3);
+
+  rot.cargue(rot.x(), rot.y()+theta, rot.z()+phi);
+
+}
+
+void Cuerpo::Rotar_cilindro2(double theta, double phi){
+  double r1,r2,r3;
+
+  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r3=r.z();
+  r.cargue(r1,r2,r3);
+
+  r1=r.x();
+  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
+  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r.cargue(r1,r2,r3);
+
+  rot.cargue(rot.x()-theta, rot.y(), rot.z()+phi);
+}
+
+void Cuerpo::Rotar_plano(double theta, double phi){
   double a1,a2,a3,b1,b2,b3,c1,c2,c3;
   
-  a1=(a.x()-h)*cos(theta)-(a.y()-k)*sin(theta)+h;
-  a2=(a.x()-h)*sin(theta)+(a.y()-k)*cos(theta)+k;
+  a1=(a.x()-h)*cos(theta)-(a.y()-h)*sin(theta)+h;
+  a2=(a.x()-h)*sin(theta)+(a.y()-h)*cos(theta)+h;
   a3=a.z();
   a.cargue(a1,a2,a3);
 
-  b1=(b.x()-h)*cos(theta)-(b.y()-k)*sin(theta)+h;
-  b2=(b.x()-h)*sin(theta)+(b.y()-k)*cos(theta)+k;
+  b1=(b.x()-h)*cos(theta)-(b.y()-h)*sin(theta)+h;
+  b2=(b.x()-h)*sin(theta)+(b.y()-h)*cos(theta)+h;
   b3=b.z();
   b.cargue(b1,b2,b3);
 
-  c1=(c.x()-h)*cos(theta)-(c.y()-k)*sin(theta)+h;
-  c2=(c.x()-h)*sin(theta)+(c.y()-k)*cos(theta)+k;
+  c1=(c.x()-h)*cos(theta)-(c.y()-h)*sin(theta)+h;
+  c2=(c.x()-h)*sin(theta)+(c.y()-h)*cos(theta)+h;
   c3=c.z();
   c.cargue(c1,c2,c3);
 
+
+  a1=a.x();
+  a2=(a.y()-h)*cos(phi)-(a.z()-h)*sin(phi)+h;
+  a3=(a.y()-h)*sin(phi)+(a.z()-h)*cos(phi)+h;
+  a.cargue(a1,a2,a3);
+
+  b1=b.x();
+  b2=(b.y()-h)*cos(phi)-(b.z()-h)*sin(phi)+h;
+  b3=(b.y()-h)*sin(phi)+(b.z()-h)*cos(phi)+h;
+  b.cargue(b1,b2,b3);
+
+  c1=c.x();
+  c2=(c.y()-h)*cos(phi)-(c.z()-h)*sin(phi)+h;
+  c3=(c.y()-h)*sin(phi)+(c.z()-h)*cos(phi)+h;
+  c.cargue(c1,c2,c3);
+
 }
+
+
 
 
 //Funciones de la clase colisionador
@@ -282,7 +351,7 @@ void TermineCuadro(void){
 
 int main(void){
 
-  double t, dt=1e-2, tmax=80;
+  double t, dt=1, tmax=30;
   int Ndibujos;
   double tdibujo;
   Cuerpo parte[N];
@@ -343,19 +412,22 @@ int i;
       
       InicieCuadro();
  
-      //for(i=0;i<8;i++) parte[i].Dibujar_esfera();
-      //for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
+      for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
+      for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
       for(i=20;i<N;i++) parte[i].Dibujar_plano();
-      
+
       TermineCuadro();
       tdibujo=0;
       
     } 
 
-    for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/12, A/2., A/2.);}
+    for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/6);}
+    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/6);}
+    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/6);}
+    for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/6);}
       
 
-    
+    /*
       //Muevase con Omelyan FR.
       for(i=0;i<N;i++){
 	parte[i].Mueva_r(dt, Zeta);
@@ -395,7 +467,7 @@ int i;
       for(i=0;i<N;i++){
         parte[i].Mueva_r(dt, Zeta);
       }
-    
+    */
   }
   
   return 0;
