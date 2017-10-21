@@ -139,14 +139,18 @@ void Cuerpo::Rotar_cilindro1(double theta, double phi){
   r3=r.z();
   r.cargue(r1,r2,r3);
 
-
-  r1=r.x();
-  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
-  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r1=(r.x()-h)*cos(phi)+(r.z()-h)*sin(phi)+h;
+  r2=r.y();
+  r3=-(r.x()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
   r.cargue(r1,r2,r3);
 
-  rot.cargue(rot.x(), rot.y()+theta, rot.z()+phi);
-  //rot.cargue(rot.x()-phi, rot.y(), rot.z());
+  /*r1=r.x();
+  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
+  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r.cargue(r1,r2,r3);*/
+
+  //rot.cargue(rot.x(), rot.y()+theta, rot.z()+phi);
+  rot.cargue(rot.x()+phi, rot.y()+theta, rot.z());
 
 }
 
@@ -158,13 +162,19 @@ void Cuerpo::Rotar_cilindro2(double theta, double phi){
   r3=r.z();
   r.cargue(r1,r2,r3);
 
-  r1=r.x();
+  r1=(r.x()-h)*cos(phi)+(r.z()-h)*sin(phi)+h;
+  r2=r.y();
+  r3=-(r.x()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r.cargue(r1,r2,r3);
+
+  /*r1=r.x();
   r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
   r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
   r.cargue(r1,r2,r3);
-
-  rot.cargue(rot.x()-theta, rot.y(), rot.z()+phi);
-  //rot.cargue(rot.x()-phi, rot.y(), rot.z());
+  */
+  
+  //rot.cargue(rot.x()-theta, rot.y(), rot.z()+phi);
+  rot.cargue(rot.x()-theta, rot.y()+phi, rot.z());
 }
 
 void Cuerpo::Rotar_plano(double theta, double phi){
@@ -353,7 +363,7 @@ void TermineCuadro(void){
 
 int main(void){
 
-  double t, dt=1, tmax=30;
+  double t, dt=1, tmax=24;
   int Ndibujos;
   double tdibujo;
   Cuerpo parte[N];
@@ -406,27 +416,35 @@ int main(void){
   parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,Vy,0,theta0,omega0,mp,Ip);
 
   parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande);
+
+
+  int i;
+  //for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/6);}
+  //for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/6);}
+  //for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/6);}
+  //for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/6);}
+
   
-int i;
+
   //Dibuja cubo y plano
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
     if (tdibujo>tmax/Ndibujos){
       
       InicieCuadro();
  
-      for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
-      //for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
-      for(i=20;i<N;i++) parte[i].Dibujar_plano();
+      //for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
+      for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
+      //for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
       tdibujo=0;
       
     } 
 
-    for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/20,M_PI/12);}
-    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/20,M_PI/12);}
-    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/20,M_PI/12);}
-    for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/20,M_PI/12);}
+    for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/10,M_PI/20);}
+    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/10,M_PI/20);}
+    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/10,M_PI/20);}
+    for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/10,M_PI/20);}
       
 
     /*
