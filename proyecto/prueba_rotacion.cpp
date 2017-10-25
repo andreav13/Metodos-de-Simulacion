@@ -8,7 +8,7 @@ using namespace std;
 
 const double A=10., L=100., R=1.;
 const double K=1e4, Gamma=50, Kcundall=10;
-const double g=9.8, h=A/2.;
+const double g=9.8;
 const int N=27;
 
 const double Zeta=0.1786178958448091;
@@ -40,10 +40,10 @@ public:
   void Dibujar_esfera(void);
   void Dibujar_cilindro(void);
   void Dibujar_plano(void);
-  void Rotar_esfera(double theta, double phi);
-  void Rotar_cilindro1(double theta, double phi);
-  void Rotar_cilindro2(double theta, double phi);
-  void Rotar_plano(double theta, double phi);
+  void Rotar_esfera(double theta, double phi, double h, double k, double l);
+  void Rotar_cilindro1(double theta, double phi, double h, double k, double l);
+  void Rotar_cilindro2(double theta, double phi, double h, double k, double l);
+  void Rotar_plano(double theta, double phi, double h, double k, double l);
   friend class Colisionador;
 };
 
@@ -116,99 +116,97 @@ void Cuerpo::Dibujar_plano(void){
 }
 
 
-void Cuerpo::Rotar_esfera(double theta, double phi){
+void Cuerpo::Rotar_esfera(double theta, double phi, double h, double k, double l){
   double r1,r2,r3;
 
-  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
-  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r1=(r.x()-h)*cos(theta)-(r.y()-k)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-k)*cos(theta)+k;
   r3=r.z();
   r.cargue(r1,r2,r3);
 
   r1=r.x();
-  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
-  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r2=(r.y()-k)*cos(phi)-(r.z()-l)*sin(phi)+k;
+  r3=(r.y()-k)*sin(phi)+(r.z()-l)*cos(phi)+l;
   r.cargue(r1,r2,r3);
 
 }
 
-void Cuerpo::Rotar_cilindro1(double theta, double phi){
+void Cuerpo::Rotar_cilindro1(double theta, double phi, double h, double k, double l){
   double r1,r2,r3;
 
-  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
-  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r1=(r.x()-h)*cos(theta)-(r.y()-k)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-k)*cos(theta)+k;
   r3=r.z();
   r.cargue(r1,r2,r3);
 
-  r1=(r.x()-h)*cos(phi)+(r.z()-h)*sin(phi)+h;
+  /*r1=(r.x()-h)*cos(phi)+(r.z()-l)*sin(phi)+h;
   r2=r.y();
-  r3=-(r.x()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
-  r.cargue(r1,r2,r3);
-
-  /*r1=r.x();
-  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
-  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r3=-(r.x()-h)*sin(phi)+(r.z()-l)*cos(phi)+l;
   r.cargue(r1,r2,r3);*/
 
-  //rot.cargue(rot.x(), rot.y()+theta, rot.z()+phi);
-  rot.cargue(rot.x()+phi, rot.y()+theta, rot.z());
+  r1=r.x();
+  r2=(r.y()-k)*cos(phi)-(r.z()-l)*sin(phi)+k;
+  r3=(r.y()-k)*sin(phi)+(r.z()-l)*cos(phi)+l;
+  r.cargue(r1,r2,r3);
+
+  rot.cargue(rot.x(), rot.y()+theta, rot.z()+phi);
 
 }
 
-void Cuerpo::Rotar_cilindro2(double theta, double phi){
+void Cuerpo::Rotar_cilindro2(double theta, double phi, double h, double k, double l){
   double r1,r2,r3;
 
-  r1=(r.x()-h)*cos(theta)-(r.y()-h)*sin(theta)+h;
-  r2=(r.x()-h)*sin(theta)+(r.y()-h)*cos(theta)+h;
+  r1=(r.x()-h)*cos(theta)-(r.y()-k)*sin(theta)+h;
+  r2=(r.x()-h)*sin(theta)+(r.y()-k)*cos(theta)+k;
   r3=r.z();
   r.cargue(r1,r2,r3);
 
-  r1=(r.x()-h)*cos(phi)+(r.z()-h)*sin(phi)+h;
+  /*r1=(r.x()-h)*cos(phi)+(r.z()-l)*sin(phi)+h;
   r2=r.y();
-  r3=-(r.x()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
-  r.cargue(r1,r2,r3);
+  r3=-(r.x()-h)*sin(phi)+(r.z()-l)*cos(phi)+l;
+  r.cargue(r1,r2,r3);*/
 
-  /*r1=r.x();
-  r2=(r.y()-h)*cos(phi)-(r.z()-h)*sin(phi)+h;
-  r3=(r.y()-h)*sin(phi)+(r.z()-h)*cos(phi)+h;
+  r1=r.x();
+  r2=(r.y()-k)*cos(phi)-(r.z()-l)*sin(phi)+k;
+  r3=(r.y()-k)*sin(phi)+(r.z()-l)*cos(phi)+l;
   r.cargue(r1,r2,r3);
-  */
   
-  //rot.cargue(rot.x()-theta, rot.y(), rot.z()+phi);
-  rot.cargue(rot.x()-theta, rot.y()+phi, rot.z());
+  
+  rot.cargue(rot.x()-theta, rot.y(), rot.z()+phi);
 }
 
-void Cuerpo::Rotar_plano(double theta, double phi){
+void Cuerpo::Rotar_plano(double theta, double phi, double h, double k, double l){
   double a1,a2,a3,b1,b2,b3,c1,c2,c3;
   
-  a1=(a.x()-h)*cos(theta)-(a.y()-h)*sin(theta)+h;
-  a2=(a.x()-h)*sin(theta)+(a.y()-h)*cos(theta)+h;
+  a1=(a.x()-h)*cos(theta)-(a.y()-k)*sin(theta)+h;
+  a2=(a.x()-h)*sin(theta)+(a.y()-k)*cos(theta)+k;
   a3=a.z();
   a.cargue(a1,a2,a3);
 
-  b1=(b.x()-h)*cos(theta)-(b.y()-h)*sin(theta)+h;
-  b2=(b.x()-h)*sin(theta)+(b.y()-h)*cos(theta)+h;
+  b1=(b.x()-h)*cos(theta)-(b.y()-k)*sin(theta)+h;
+  b2=(b.x()-h)*sin(theta)+(b.y()-k)*cos(theta)+k;
   b3=b.z();
   b.cargue(b1,b2,b3);
 
-  c1=(c.x()-h)*cos(theta)-(c.y()-h)*sin(theta)+h;
-  c2=(c.x()-h)*sin(theta)+(c.y()-h)*cos(theta)+h;
+  c1=(c.x()-h)*cos(theta)-(c.y()-k)*sin(theta)+h;
+  c2=(c.x()-h)*sin(theta)+(c.y()-k)*cos(theta)+k;
   c3=c.z();
   c.cargue(c1,c2,c3);
 
 
   a1=a.x();
-  a2=(a.y()-h)*cos(phi)-(a.z()-h)*sin(phi)+h;
-  a3=(a.y()-h)*sin(phi)+(a.z()-h)*cos(phi)+h;
+  a2=(a.y()-k)*cos(phi)-(a.z()-l)*sin(phi)+k;
+  a3=(a.y()-k)*sin(phi)+(a.z()-l)*cos(phi)+l;
   a.cargue(a1,a2,a3);
 
   b1=b.x();
-  b2=(b.y()-h)*cos(phi)-(b.z()-h)*sin(phi)+h;
-  b3=(b.y()-h)*sin(phi)+(b.z()-h)*cos(phi)+h;
+  b2=(b.y()-k)*cos(phi)-(b.z()-l)*sin(phi)+k;
+  b3=(b.y()-k)*sin(phi)+(b.z()-l)*cos(phi)+l;
   b.cargue(b1,b2,b3);
 
   c1=c.x();
-  c2=(c.y()-h)*cos(phi)-(c.z()-h)*sin(phi)+h;
-  c3=(c.y()-h)*sin(phi)+(c.z()-h)*cos(phi)+h;
+  c2=(c.y()-k)*cos(phi)-(c.z()-l)*sin(phi)+k;
+  c3=(c.y()-k)*sin(phi)+(c.z()-l)*cos(phi)+l;
   c.cargue(c1,c2,c3);
 
 }
@@ -229,21 +227,20 @@ void Colisionador::Inicie(void){
 }
 
 void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
-  int i,j;
-  vector3D g_vector; g_vector.cargue(0,0,g);
+  int i;
   for(i=0;i<N;i++){
     Grano[i].BorreFuerzayTorque();
   }
+  
   //Agregue la fuerza de la gravedad
+  vector3D g_vector; g_vector.cargue(0,0,g);
   for(i=0;i<N-1;i++){
     Grano[i].AgregueFuerza(-(Grano[i].m)*g_vector);
   }
   
-  //Calcular todas las fuerzas entre parejas de planetas
+  //Calcular todas las fuerzas entre parejas de partes
   /*for(i=0;i<N;i++){
-    for(j=i+1;j<N+4;j++){
-      CalculeLaFuerzaEntre(Grano[i], Grano[j], ele[i][j], EstoyEnColision[i][j], dt);
-    }
+      CalculeLaFuerzaEntre(Grano[i], Grano[26], ele[i][26], EstoyEnColision[i][26], dt);
     }*/
   CalculeLaFuerzaEntrePlanos(Grano, ele[21][26], EstoyEnColision[21][26], dt);
 }
@@ -354,7 +351,7 @@ void InicieAnimacion(void){
 }
 
 void InicieCuadro(void){
-  cout<<"splot 0,0,0 ";
+  cout<<"splot 0,0,0";
 }
 
 void TermineCuadro(void){
@@ -363,7 +360,7 @@ void TermineCuadro(void){
 
 int main(void){
 
-  double t, dt=1, tmax=24;
+  double t, dt=1e-2, tmax=12;
   int Ndibujos;
   double tdibujo;
   Cuerpo parte[N];
@@ -415,16 +412,17 @@ int main(void){
   parte[24].Inicie(0,0,0,0,0,0, A+R,0,0, A+R,0,A, A+R,A,0, V,Vy,0,theta0,omega0,mp,Ip);
   parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,Vy,0,theta0,omega0,mp,Ip);
 
+  /*parte[20].Inicie(0,0,0,0,0,0, -0,0,0,  -0,A,0,  -0,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[21].Inicie(0,0,0,0,0,0, 0,0,-0,  0,A,-0,  A,0,-0,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[22].Inicie(0,0,0,0,0,0, 0,-0,0,  A,-0,0,  0,-0,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[23].Inicie(0,0,0,0,0,0, 0,0,A+0, A,0,A+0, 0,A,A+0, V,Vy,0,theta0,omega0,mp,Ip);
+  parte[24].Inicie(0,0,0,0,0,0, A+0,0,0, A+0,0,A, A+0,A,0, V,Vy,0,theta0,omega0,mp,Ip);
+  parte[25].Inicie(0,0,0,0,0,0, 0,A+0,0, A,A+0,0, 0,A+0,A, V,Vy,0,theta0,omega0,mp,Ip);*/
+
   parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande);
 
 
   int i;
-  //for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/6);}
-  //for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/6);}
-  //for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/6);}
-  //for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/6);}
-
-  
 
   //Dibuja cubo y plano
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
@@ -432,64 +430,67 @@ int main(void){
       
       InicieCuadro();
  
-      //for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
+      for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
       for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
-      //for(i=20;i<N;i++) parte[i].Dibujar_plano();
+      for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
       tdibujo=0;
-      
-    } 
-
-    for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/10,M_PI/20);}
-    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/10,M_PI/20);}
-    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/10,M_PI/20);}
-    for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/10,M_PI/20);}
-      
-
-    /*
-      //Muevase con Omelyan FR.
-      for(i=0;i<N;i++){
-	parte[i].Mueva_r(dt, Zeta);
+       
       }
 
-      Newton.CalculeTodasLasFuerzas(parte, dt);
+    //Rota cubo
+    Cuerpo A=parte[0], F=parte[7];
+    double h=(A.Getx()+F.Getx())/2.,     k=(A.Gety()+F.Gety())/2.,     l=(A.Getz()+F.Getz())/2.;
+
+    for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/20,0,h,k,l);}
+    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/20,0,h,k,l);}
+    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/20,0,h,k,l);}
+    for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/20,0,h,k,l);}
+
     
-      for(i=0;i<N;i++){
-        parte[i].Mueva_V(dt, (1-2*Lambda)/2);
-      }
-      for(i=0;i<N;i++){
-        parte[i].Mueva_r(dt, Xi);
-      }
-   
-      Newton.CalculeTodasLasFuerzas(parte, dt);
+    //Muevase con Omelyan FR.
+    for(i=0;i<N;i++){
+      parte[i].Mueva_r(dt, Zeta);
+    }
     
-      for(i=0;i<N;i++){
-        parte[i].Mueva_V(dt, Lambda);
-      }
-      for(i=0;i<N;i++){
-        parte[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
-      }
-      Newton.CalculeTodasLasFuerzas(parte, dt);
+    Newton.CalculeTodasLasFuerzas(parte, dt);
     
-      for(i=0;i<N;i++){
-        parte[i].Mueva_V(dt, Lambda);
-      }
-      for(i=0;i<N;i++){
-        parte[i].Mueva_r(dt, Xi);
-      }
+    for(i=0;i<N;i++){
+      parte[i].Mueva_V(dt, (1-2*Lambda)/2);
+    }
+    for(i=0;i<N;i++){
+      parte[i].Mueva_r(dt, Xi);
+    }
     
-      Newton.CalculeTodasLasFuerzas(parte, dt);
+    Newton.CalculeTodasLasFuerzas(parte, dt);
     
-      for(i=0;i<N;i++){
-        parte[i].Mueva_V(dt, (1-2*Lambda)/2);
-      }
-      for(i=0;i<N;i++){
-        parte[i].Mueva_r(dt, Zeta);
-      }
-    */
+    for(i=0;i<N;i++){
+      parte[i].Mueva_V(dt, Lambda);
+    }
+    for(i=0;i<N;i++){
+      parte[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
+    }
+    Newton.CalculeTodasLasFuerzas(parte, dt);
+    
+    for(i=0;i<N;i++){
+      parte[i].Mueva_V(dt, Lambda);
+    }
+    for(i=0;i<N;i++){
+      parte[i].Mueva_r(dt, Xi);
+    }
+    
+    Newton.CalculeTodasLasFuerzas(parte, dt);
+    
+    for(i=0;i<N;i++){
+      parte[i].Mueva_V(dt, (1-2*Lambda)/2);
+    }
+    for(i=0;i<N;i++){
+      parte[i].Mueva_r(dt, Zeta);
+    }
+    
   }
   
   return 0;
-
+  
 }
