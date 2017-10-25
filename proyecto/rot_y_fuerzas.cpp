@@ -333,9 +333,9 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   //Colisión entre las esferas (vertices) del cubo y la superficie(esfera). Tipo de Colisión Esfera-Esfera.;
   //--------------------------------------------------------------------------------------------------------
   
-  for (int i = 0;i<8;i++){
+  /*for (int i = 0;i<8;i++){
     double z=Grano[i].Getz(),r2=-L/2+R;
-    if(z<-L/2+R){        //Condición de contacto Esfera-Superficie.
+    if(z<r2){        //Condición de contacto Esfera-Superficie.
       
       double Rpared=10000;                                                        //Distancia que penetra la esfera en el plano(otra esfera)
       double s_esfera=r2-z;                                        
@@ -347,19 +347,25 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       Fn=n*componenteFn;
       F2=Fn;
     }
-  }
+  }*/
   
 
   //---------------------------------------------------------------------------------------------------------------------------
   // Colisión entre los cilindros (lados) del cubo y la superficie (cilindro).Tipo de Colisión Cilindro-Cilindro-Ejes Paralelos.
   //---------------------------------------------------------------------------------------------------------------------------
   
-  //for (int i = 8;i<20;i++){
-  
-  //Condición de contacto cilindro-Superficie, supongo que debe ser cuando la coordenada z de la base del cilindro este por debajo de -L/2
-  //Fn=(M_PI/4)*E*L*s       con   L=longitud del cilindro.
-  
-    // }
+  for (int i = 8;i<20;i++){
+    double z=Grano[i].Getz(),r2=-L/2+R;
+    if(z<r2){        //Condición de contacto Cilindro-Superficie.
+
+      double s_cilindro=r2-z;           //Distancia que penetra el cilindro en el plano(otra cilindro)                                    
+      
+      componenteFn=(M_PI/4)*E*A*s_cilindro;           //A=longitud del cilindro
+      if(componenteFn<0){ componenteFn=0;}
+      Fn=n*componenteFn;
+      F2=Fn;
+    }
+  }
   
 
   for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}    
