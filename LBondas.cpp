@@ -24,15 +24,16 @@ private:
   double f[Lx][Ly][Q], fnew[Lx][Ly][Q]; //f[ix][iy][i]
 public:
   LatticeBoltzmann(void);
-  double rho(int ix, int iy, bool CalculeConLosNew);
+  double rho(int ix, int iy, bool UseNew);
   double Jx(int ix, int iy);
   double Jy(int ix, int iy);
   double fequilibrio(int i, double rho0, double Jx0, double Jy0);
   void Inicie(double rho0, double Jx0, double Jy0);
-  void ImponerCampos(int ix, int iy, double & rho0, double & Jx0, double & Jy0, double t);
+  void ImponerCampos(int ix, int iy, double & rho0, double & Jx0, double & Jy0, int t);
   void Colisione(int t);
   void Adveccione(void);
   void Imprimase(char * NombreArchivo, int t);
+  void ImprimaUnaLinea(char * NombreArchivo,int t);
 };
 
 LatticeBoltzmann::LatticeBoltzmann(void){
@@ -47,13 +48,13 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   
 }
 
-double LatticeBoltzmann::rho(int ix, int iy, bool CalculeConLosNew){
+double LatticeBoltzmann::rho(int ix, int iy, bool UseNew){
   int i; double suma;
   for(suma=0,i=0;i<Q;i++)
-    if(CalculeConLosNew)
-    suma+=f[ix][iy][i];
+    if(UseNew)
+    suma+=fnew[ix][iy][i];
     else
-      suma+=fnew[ix][iy][i];
+      suma+=f[ix][iy][i];
   return suma;
 }
 
@@ -88,7 +89,7 @@ int ix,iy,i;
       }
 }
 
-void LatticeBoltzmann::ImponerCampos(int ix, int iy, double & rho0, double & Jx0, double & Jy0, double t){
+void LatticeBoltzmann::ImponerCampos(int ix, int iy, double & rho0, double & Jx0, double & Jy0, int t){
   double A=10, lambda=10, omega=2*M_PI*C/lambda;
   if(ix==Lx/2 and iy==Ly/2)
     rho0=A*sin(omega*t);
@@ -118,10 +119,21 @@ void LatticeBoltzmann::Imprimase(char * NombreArchivo, int t){
   ofstream MiArchivo(NombreArchivo);
   for(int ix=0;ix<Lx;ix++){
     for(int iy=0;iy<Ly;iy++){
-      rho0=rho(ix,iy,true);
+      rho0=rho(ix,iy,true); Jx0=Jx(ix,iy);  Jy0=Jy(ix,iy);
       ImponerCampos(ix,iy,rho0,Jx0,Jy0,t);
       MiArchivo<<ix<<" "<<iy<<" "<<rho0<<endl;
     }MiArchivo<<endl;
+  }
+  MiArchivo.close();
+}
+
+void LatticeBoltzmann::ImprimaUnaLinea(char * NombreArchivo,int t){
+  ofstream MiArchivo(NombreArchivo); double rho0,Jx0,Jy0;
+  int ix=Lx/2;
+  for(int iy=0;iy<Ly;iy++){
+    rho0=rho(ix,iy,true);   Jx0=Jx(ix,iy);  Jy0=Jy(ix,iy);
+    ImponerCampos(ix,iy,rho0,Jx0,Jy0,t);
+    MiArchivo<<iy<<" "<<rho0<<endl;
   }
   MiArchivo.close();
 }
@@ -133,7 +145,7 @@ void LatticeBoltzmann::Imprimase(char * NombreArchivo, int t){
 int main(void){
 
   LatticeBoltzmann Ondas;
-  int t,tmax=400;
+  int t,tmax=160;
 
   double rho0=0,Jx0=0,Jy0=0;
   
@@ -147,6 +159,7 @@ int main(void){
   }
   
   Ondas.Imprimase("Ondas.dat", t);
+  Ondas.ImprimaUnaLinea("CorteCentral.dat",t);
   
   return 0;
 }

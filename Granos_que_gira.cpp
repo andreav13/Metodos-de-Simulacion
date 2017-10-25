@@ -244,7 +244,7 @@ int main(void){
     }
 
   
-  for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
+  //for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
     
     if (tdibujo>tmax/Ndibujos){
       InicieCuadro();
@@ -253,7 +253,7 @@ int main(void){
       tdibujo=0;
     }
     
-  
+    /*
   //Muevase con Omelyan FR.
     for(i=0;i<N;i++){
       Grano[i].Mueva_r(dt, Zeta);
@@ -293,7 +293,7 @@ int main(void){
       Grano[i].Mueva_r(dt, Zeta);
     }
     
-  }
+    }*/
   
   return 0;
 
