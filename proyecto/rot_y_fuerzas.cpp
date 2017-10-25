@@ -328,11 +328,10 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
     }
     }*/
 
+  
   //--------------------------------------------------------------------------------------------------------
   //Colisión entre las esferas (vertices) del cubo y la superficie(esfera). Tipo de Colisión Esfera-Esfera.;
   //--------------------------------------------------------------------------------------------------------
-  
-  // cout<<Grano[6].Getx()<<" "<<Grano[6].Gety()<<" "<<Grano[6].Getz()<<endl;
   
   for (int i = 0;i<8;i++){
     double z=Grano[i].Getz(),r2=-L/2+R;
@@ -342,6 +341,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       double s_esfera=r2-z;                                        
       double R_efectivo=(Rpared*R)/(Rpared+R);                                      // Necesario para el calculo de K
       double K_esfera=(4/3)*E*pow(R_efectivo,0.5);                                  // K calculado manualmente
+      
       componenteFn=K_esfera*pow(s_esfera,1.5);
       if(componenteFn<0){ componenteFn=0;}
       Fn=n*componenteFn;
@@ -350,36 +350,19 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   }
   
 
+  //---------------------------------------------------------------------------------------------------------------------------
+  // Colisión entre los cilindros (lados) del cubo y la superficie (cilindro).Tipo de Colisión Cilindro-Cilindro-Ejes Paralelos.
+  //---------------------------------------------------------------------------------------------------------------------------
+  
+  //for (int i = 8;i<20;i++){
+  
+  //Condición de contacto cilindro-Superficie, supongo que debe ser cuando la coordenada z de la base del cilindro este por debajo de -L/2
+  //Fn=(M_PI/4)*E*L*s       con   L=longitud del cilindro.
+  
+    // }
   
 
-  for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}
-
-  /*
-  double s=-Grano[21].Getaz()-L/2;
-  
-  if(Grano[21].Getaz()<-L/2 and Grano[21].Getbz()<-L/2 and Grano[21].Getcz()<-L/2){    //SI SE CHOCAN
-    //Geometria y dinamica del contacto
-    n.cargue(0,0,-1);
-
-    //Calcular velocidad de contacto 
-    Vc=Grano[21].V; 
-    componenteVcn=Vc*n;Vcn=n*componenteVcn;
-    
-    //FUERZAS NORMALES
-    //Fuerza de Hertz
-    componenteFn=K*pow(s,1.5);
-    //Disipación Plástica
-    //componenteFn-=sqrt(s)*Gamma*componenteVcn;
-    if(componenteFn<0) componenteFn=0;
-    Fn=n*componenteFn;
-    
-    F2=Fn; int i;
-    for(i=0;i<N-1;i++){
-    Grano[i].AgregueFuerza(F2*(-1));
-    }
-    }*/
-
-    
+  for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}    
   
 }
 
