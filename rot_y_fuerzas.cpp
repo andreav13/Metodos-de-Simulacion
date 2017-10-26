@@ -272,25 +272,10 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       }
     }
   }
-
-  //-------------------------------------------------------------------------------
-  //Colisión entre las caras del cubo y la superficie. Tipo de Colisión Plano-Plano
-  //-------------------------------------------------------------------------------
-  if (cual==1){
-  for (int i = 20;i<N-1;i++){
-    if (Grano[i].Getaz()<-L/2 and Grano[i].Getbz()<-L/2 and Grano[i].Getcz()<-L/2){
-      double s_plano=-Grano[i].Getaz()-L/2;
-      
-      componenteFn=E*A*s_plano; //fuerza del resorte con constante EA/Lx
-      if(componenteFn<0){ componenteFn=0;}
-      Fn=n*componenteFn;
-      F2=Fn;
-    }
-  }}
-
+  cout<<cual<<endl;
   
   //--------------------------------------------------------------------------------------------------------
-  //Colisión entre las esferas (vertices) del cubo y la superficie(esfera). Tipo de Colisión Esfera-Esfera.;
+  //Colisión entre las esferas (vertices) del cubo y la superficie (esfera). Tipo de Colisión Esfera-Esfera.;
   //--------------------------------------------------------------------------------------------------------
   if(cual==0){
   for (int i = 0;i<8;i++){
@@ -308,7 +293,23 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       F2=Fn;
     }
   }}
+
   
+  //-------------------------------------------------------------------------------
+  //Colisión entre las caras del cubo y la superficie. Tipo de Colisión Plano-Plano
+  //-------------------------------------------------------------------------------
+  if (cual==1){
+  for (int i = 20;i<N-1;i++){
+    if (Grano[i].Getaz()<-L/2 and Grano[i].Getbz()<-L/2 and Grano[i].Getcz()<-L/2){
+      double s_plano=-Grano[i].Getaz()-L/2;
+      
+      componenteFn=E*A*s_plano; //fuerza del resorte con constante EA/Lx
+      if(componenteFn<0){ componenteFn=0;}
+      Fn=n*componenteFn;
+      F2=Fn;
+    }
+  }}
+
 
   //---------------------------------------------------------------------------------------------------------------------------
   // Colisión entre los cilindros (lados) del cubo y la superficie (cilindro).Tipo de Colisión Cilindro-Cilindro-Ejes Paralelos.
@@ -429,19 +430,24 @@ int main(void){
 
 
   int i;
-
+  double h=A/2.,k=A/2.,l=A/2.;
+  for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/8,M_PI/5,h,k,l);}
+  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/8,M_PI/5,h,k,l);}
+  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/8,M_PI/5,h,k,l);}
+  for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/8,M_PI/5,h,k,l);}
+  
   //Dibuja cubo y plano
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
     if (tdibujo>tmax/Ndibujos){
       
-      InicieCuadro();
+      /*InicieCuadro();
  
       for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
       for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
       for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
-      tdibujo=0;
+      tdibujo=0;*/
        
       }
 
