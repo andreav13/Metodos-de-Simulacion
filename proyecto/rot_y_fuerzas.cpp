@@ -38,7 +38,7 @@ public:
   void BorreFuerzayTorque(void);
   void AgregueFuerza(vector3D F0);
   void AgregueTorque(vector3D tau0);
-  void Mueva_r(double dt, double Constante);
+  void Mueva_r(Cuerpo * parte, double dt, double Constante);
   void Mueva_V(double dt, double Constante);
   double Getx(void){return r.x();};
   double Gety(void){return r.y();};
@@ -100,20 +100,29 @@ void Cuerpo::AgregueTorque(vector3D tau0){
   tau+=tau0;
 }
 
-void Cuerpo::Mueva_r(double dt, double Constante){
+void Cuerpo::Mueva_r(Cuerpo * parte, double dt, double Constante){
   r+=V*(Constante*dt);
   a+=V*(Constante*dt);
   b+=V*(Constante*dt);
   c+=V*(Constante*dt);
-  theta+=omega.z()*Constante*dt;
+
+  vector3D THETA=omega*(Constante*dt);
+  Cuerpo A=parte[0], F=parte[7];
+  double h=(A.Getx()+F.Getx())/2.,     k=(A.Gety()+F.Gety())/2.,     l=(A.Getz()+F.Getz())/2.;
+  int i; 
+  
+  for (i=0;i<8;i++){parte[i].Rotar_esfera(THETA.z(),THETA.x(),h,k,l);}
+  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(THETA.z(),THETA.x(),h,k,l);}
+  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(THETA.z(),THETA.x(),h,k,l);}
+  for (i=20;i<26;i++){parte[i].Rotar_plano(THETA.z(),THETA.x(),h,k,l);} 
+
 }
 
 
 void Cuerpo::Mueva_V(double dt, double Constante){
   V+=F*(Constante*dt)/m;
-  omega+=tau*Constante*dt/I;
+  omega+=tau*(Constante*dt)/I;
 }
-
 
 void Cuerpo::Dibujar_esfera(void){
   cout<<", "<<r.x()<<"+"<<R<<"*sin(u)*cos(v),"<<r.y()<<"+"<<R<<"*sin(u)*sin(v),"<<r.z()<<"+"<<R<<"*cos(u)";
@@ -251,8 +260,11 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
 
 
 void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
-  vector3D F2,Fn,n,Vc,Vcn;
-  double componenteVcn,componenteFn,ERR=dt;
+  Cuerpo B=Grano[0], F=Grano[7];
+  double h=(B.Getx()+F.Getx())/2.,     k=(B.Gety()+F.Gety())/2.,     l=(B.Getz()+F.Getz())/2.;
+  
+  vector3D F2,Fn,n,Vc,Vcn,torque,dist;
+  double componenteVcn,componenteFn,ERR=dt,x=h,y=k,z=l;
 
   //Vector unitario normal a la superficie.
   n.cargue(0,0,-1);
@@ -279,7 +291,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   //--------------------------------------------------------------------------------------------------------
   if(cual==0){
   for (int i = 0;i<8;i++){
-    double z=Grano[i].Getz(),r2=-L/2+R;
+    double r2=-L/2.+R; x=Grano[i].Getx(); y=Grano[i].Gety(); z=Grano[i].Getz();
     if(z<r2){        //Condición de contacto Esfera-Superficie.
       
       double Rpared=10000;                                                        //Distancia que penetra la esfera en el plano(otra esfera)
@@ -316,7 +328,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   //---------------------------------------------------------------------------------------------------------------------------
   if(cual==2){
   for (int i = 8;i<20;i++){
-    double z=Grano[i].Getz(),r2=-L/2+R;
+    double r2=-L/2.+R; x=Grano[i].Getx(); y=Grano[i].Gety(); z=Grano[i].Getz();
     if(z<r2){        //Condición de contacto Cilindro-Superficie.
 
       double s_cilindro=r2-z;           //Distancia que penetra el cilindro en el plano(otra cilindro)                                    
@@ -327,10 +339,22 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       F2=Fn;
     }
   }}
-  
+
 
   for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}
-  //for(int i=0;i<N-1;i++){Grano[i].AgregueTorque((n*(-R2))^Ft)}
+
+
+  
+  //Calculo del torque
+  
+  dist.cargue(x-h,y-k,z-l);
+  torque=dist^F2;
+  
+  for(int i=0;i<N-1;i++){Grano[i].AgregueTorque(-1*torque);}
+
+  //cout<<"x "<<x<<" y "<<y<<" z "<<z<<endl;
+  //cout<<"dist.x "<<dist.x()<<" dist.y "<<dist.y()<<" dist.z "<<dist.z()<<endl;
+  //cout<<"F2.z "<<F2.z()<<" torque.x "<<torque.x()<<" torque.y "<<torque.y()<<" torque.z "<<torque.z()<<endl;
   
 }
 
@@ -412,19 +436,19 @@ int main(void){
   parte[19].Inicie(A,0,A, 0,0,-M_PI/2, 0,0,0,0,0,0,0,0,0, V,Vy,0,theta0,omega0,mc,Ic);
 
   //PLANOS
-  parte[20].Inicie(0,0,0,0,0,0, -R,0,0,  -R,A,0,  -R,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  /*parte[20].Inicie(0,0,0,0,0,0, -R,0,0,  -R,A,0,  -R,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[21].Inicie(0,0,0,0,0,0, 0,0,-R,  0,A,-R,  A,0,-R,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[22].Inicie(0,0,0,0,0,0, 0,-R,0,  A,-R,0,  0,-R,A,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[23].Inicie(0,0,0,0,0,0, 0,0,A+R, A,0,A+R, 0,A,A+R, V,Vy,0,theta0,omega0,mp,Ip);
   parte[24].Inicie(0,0,0,0,0,0, A+R,0,0, A+R,0,A, A+R,A,0, V,Vy,0,theta0,omega0,mp,Ip);
-  parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,Vy,0,theta0,omega0,mp,Ip);
+  parte[25].Inicie(0,0,0,0,0,0, 0,A+R,0, A,A+R,0, 0,A+R,A, V,Vy,0,theta0,omega0,mp,Ip);*/
 
-  /*parte[20].Inicie(0,0,0,0,0,0, -0,0,0,  -0,A,0,  -0,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
+  parte[20].Inicie(0,0,0,0,0,0, -0,0,0,  -0,A,0,  -0,0,A,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[21].Inicie(0,0,0,0,0,0, 0,0,-0,  0,A,-0,  A,0,-0,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[22].Inicie(0,0,0,0,0,0, 0,-0,0,  A,-0,0,  0,-0,A,  V,Vy,0,theta0,omega0,mp,Ip);
   parte[23].Inicie(0,0,0,0,0,0, 0,0,A+0, A,0,A+0, 0,A,A+0, V,Vy,0,theta0,omega0,mp,Ip);
   parte[24].Inicie(0,0,0,0,0,0, A+0,0,0, A+0,0,A, A+0,A,0, V,Vy,0,theta0,omega0,mp,Ip);
-  parte[25].Inicie(0,0,0,0,0,0, 0,A+0,0, A,A+0,0, 0,A+0,A, V,Vy,0,theta0,omega0,mp,Ip);*/
+  parte[25].Inicie(0,0,0,0,0,0, 0,A+0,0, A,A+0,0, 0,A+0,A, V,Vy,0,theta0,omega0,mp,Ip);
 
   parte[26].Inicie(0,0,0,0,0,0, -L/2,-L/2,-L/2, -L/2,L/2,-L/2, L/2,-L/2,-L/2, 0,0,0,0,0,mp_grande,Ip_grande);
 
@@ -442,8 +466,8 @@ int main(void){
       
       InicieCuadro();
  
-      for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
-      for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
+      //for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
+      //for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
       for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
@@ -463,7 +487,7 @@ int main(void){
     
     //Muevase con Omelyan FR.
     for(i=0;i<N;i++){
-      parte[i].Mueva_r(dt, Zeta);
+      parte[i].Mueva_r(parte, dt, Zeta);
     }
     
     Newton.CalculeTodasLasFuerzas(parte, dt);
@@ -472,7 +496,7 @@ int main(void){
       parte[i].Mueva_V(dt, (1-2*Lambda)/2);
     }
     for(i=0;i<N;i++){
-      parte[i].Mueva_r(dt, Xi);
+      parte[i].Mueva_r(parte, dt, Xi);
     }
     
     Newton.CalculeTodasLasFuerzas(parte, dt);
@@ -481,7 +505,7 @@ int main(void){
       parte[i].Mueva_V(dt, Lambda);
     }
     for(i=0;i<N;i++){
-      parte[i].Mueva_r(dt, 1-2*(Xi+Zeta)); 
+      parte[i].Mueva_r(parte, dt, 1-2*(Xi+Zeta)); 
     }
     Newton.CalculeTodasLasFuerzas(parte, dt);
     
@@ -489,7 +513,7 @@ int main(void){
       parte[i].Mueva_V(dt, Lambda);
     }
     for(i=0;i<N;i++){
-      parte[i].Mueva_r(dt, Xi);
+      parte[i].Mueva_r(parte, dt, Xi);
     }
     
     Newton.CalculeTodasLasFuerzas(parte, dt);
@@ -498,7 +522,7 @@ int main(void){
       parte[i].Mueva_V(dt, (1-2*Lambda)/2);
     }
     for(i=0;i<N;i++){
-      parte[i].Mueva_r(dt, Zeta);
+      parte[i].Mueva_r(parte, dt, Zeta);
     }
     
   }
