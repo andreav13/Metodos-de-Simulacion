@@ -272,7 +272,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       }
     }
   }
-  cout<<cual<<endl;
+  //cout<<cual<<endl;
   
   //--------------------------------------------------------------------------------------------------------
   //Colisión entre las esferas (vertices) del cubo y la superficie (esfera). Tipo de Colisión Esfera-Esfera.;
@@ -440,14 +440,14 @@ int main(void){
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
     if (tdibujo>tmax/Ndibujos){
       
-      /*InicieCuadro();
+      InicieCuadro();
  
       for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
       for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
       for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
-      tdibujo=0;*/
+      tdibujo=0;
        
       }
 
