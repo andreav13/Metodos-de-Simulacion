@@ -267,12 +267,12 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   }
   if (cual==0){
     for (int i=20;i<N-1;i++){
-      if (abs((Grano[i].Getaz()-Grano[i].Getbz())<ERR and abs(Grano[i].Getaz()-Grano[i].Getcz())>ERR) or (abs(Grano[i].Getbz()-Grano[i].Getcz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getaz())>ERR) or (abs(Grano[i].Getcz()-Grano[i].Getaz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getcz())>ERR)){
+      if ((abs(Grano[i].Getaz()-Grano[i].Getbz())<ERR and abs(Grano[i].Getaz()-Grano[i].Getcz())>ERR) or (abs(Grano[i].Getbz()-Grano[i].Getcz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getaz())>ERR) or (abs(Grano[i].Getcz()-Grano[i].Getaz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getcz())>ERR)){
 	cual=2;
       }
     }
   }
-  cout<<cual<<endl;
+
   
   //--------------------------------------------------------------------------------------------------------
   //Colisión entre las esferas (vertices) del cubo y la superficie (esfera). Tipo de Colisión Esfera-Esfera.;
@@ -431,23 +431,23 @@ int main(void){
 
   int i;
   double h=A/2.,k=A/2.,l=A/2.;
-  for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/8,M_PI/5,h,k,l);}
-  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/8,M_PI/5,h,k,l);}
-  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/8,M_PI/5,h,k,l);}
-  for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/8,M_PI/5,h,k,l);}
+  for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/8,0,h,k,l);}
+  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/8,0,h,k,l);}
+  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/8,0,h,k,l);}
+  for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/8,0,h,k,l);}
   
   //Dibuja cubo y plano
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
     if (tdibujo>tmax/Ndibujos){
       
-      /*InicieCuadro();
+      InicieCuadro();
  
       for(i=0;i<8;i++)  parte[i].Dibujar_esfera();
       for(i=8;i<20;i++) parte[i].Dibujar_cilindro();
       for(i=20;i<N;i++) parte[i].Dibujar_plano();
 
       TermineCuadro();
-      tdibujo=0;*/
+      tdibujo=0;
        
       }
 
@@ -455,10 +455,10 @@ int main(void){
     Cuerpo A=parte[0], F=parte[7];
     double h=(A.Getx()+F.Getx())/2.,     k=(A.Gety()+F.Gety())/2.,     l=(A.Getz()+F.Getz())/2.;
 
-    //for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/20,0,h,k,l);}
-    //for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/20,0,h,k,l);}
-    //for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/20,0,h,k,l);}
-    //for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/20,0,h,k,l);}
+    for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/20,h,k,l);}
+    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/20,h,k,l);}
+    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/20,h,k,l);}
+    for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/20,h,k,l);}
 
     
     //Muevase con Omelyan FR.
