@@ -246,78 +246,37 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo* Grano, double dt){
   }
 
   //Calcule la fuerza entre el objeto y el plano
-  CalculeLaFuerzaEntrePlanos(Grano, dt);
-  
-  //Calcular todas las fuerzas entre parejas de partes
-  /*for(i=0;i<N;i++){
-      CalculeLaFuerzaEntre(Grano[i], Grano[26], ele[i][26], EstoyEnColision[i][26], dt);
-    }*/
-  
+  CalculeLaFuerzaEntrePlanos(Grano, dt);  
 }
 
-/*
-void Colisionador::CalculeLaFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2, vector3D & ele, bool & EstoyEnColision, double dt){
-  vector3D F2,Fn,Ft,runitario,n,Vc,Vcn,Vct,t,r21 = Grano2.r-Grano1.r;
-  double s,m1,m2,R1,R2,m12,componenteVcn,normaVct,componenteFn,normaFt,Ftmax;
-  double ERFF=1e-8,d21=norma(r21);
-  s=Grano1.R+Grano2.R-d21;
-
-  if(s>0){    //SI SE CHOCAN
-
-    //Geometria y dinamica del contacto
-    m1=Grano1.m; m2=Grano2.m; m12=(m1*m2)/(m1+m2);
-    R1=Grano1.R; R2=Grano2.R;
-    n=r21/d21;
-
-    //Calcular velocidad de contacto y el vector tangente
-    Vc=(Grano2.V-Grano1.V)-(Grano2.omega^n)*R2-(Grano1.omega^n)*R1;  // ^ = prod cruz
-    //velocidad del punto de contacto
-                            // -> dividimos en componentes normal y tangencial
-    componenteVcn=Vc*n;Vcn=n*componenteVcn; Vct=Vc-Vcn; normaVct=norma(Vct);
-    if(normaVct<ERFF) t.cargue(0,0,0);
-    else t=Vct/normaVct;
-
-    //FUERZAS NORMALES
-    //Fuerza de Hertz
-    componenteFn=K*pow(s,1.5);
-    //Disipación Plástica
-    componenteFn-=m12*sqrt(s)*Gamma*componenteVcn;
-    if(componenteFn<0) componenteFn=0;
-    Fn=n*componenteFn;
-
-    //FUERZAS TANGENCIALES
-    //Fuerza estática
-    ele+=(Vct*dt);
-    Ft=ele*(-Kcundall);
-    //Fuerza cinética
-    Ftmax=MU*componenteFn; normaFt=norma(Ft);
-    if(normaFt>Ftmax) Ft=ele*(-Ftmax/norma(ele));
-    
-    F2=Fn+Ft;
-    Grano1.AgregueFuerza(F2*(-1)); Grano2.AgregueFuerza(F2);
-    Grano1.AgregueTorque((n*(-R2))^Ft); Grano2.AgregueTorque((n*R1)^(Ft*(-1)));
-
-    EstoyEnColision=true;
-  }
-  
-  else if(EstoyEnColision==true){
-    ele.cargue(0,0,0); EstoyEnColision=false;
-  }
-  
-}*/
 
 void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   vector3D F2,Fn,n,Vc,Vcn;
-  double componenteVcn,componenteFn;
+  double componenteVcn,componenteFn,ERR=dt;
 
   //Vector unitario normal a la superficie.
-  n.cargue(0,0,-1); 
+  n.cargue(0,0,-1);
+
+  int cual=0;                    //0:esfera-esfera, 1:plano-plano, 2:cilindro-cilindro
+  //Define cual colision sucede
+  for (int i=20;i<N-1;i++){
+    if (Grano[i].Getaz()-Grano[i].Getbz()<ERR and Grano[i].Getbz()-Grano[i].Getcz()<ERR){
+      cual=1;
+    }
+  }
+  if (cual==0){
+    for (int i=20;i<N-1;i++){
+      if (abs((Grano[i].Getaz()-Grano[i].Getbz())<ERR and abs(Grano[i].Getaz()-Grano[i].Getcz())>ERR) or (abs(Grano[i].Getbz()-Grano[i].Getcz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getaz())>ERR) or (abs(Grano[i].Getcz()-Grano[i].Getaz())<ERR and abs(Grano[i].Getbz()-Grano[i].Getcz())>ERR)){
+	cual=2;
+      }
+    }
+  }
 
   //-------------------------------------------------------------------------------
   //Colisión entre las caras del cubo y la superficie. Tipo de Colisión Plano-Plano
   //-------------------------------------------------------------------------------
-
-  /*for (int i = 20;i<N;i++){
+  if (cual==1){
+  for (int i = 20;i<N-1;i++){
     if (Grano[i].Getaz()<-L/2 and Grano[i].Getbz()<-L/2 and Grano[i].Getcz()<-L/2){
       double s_plano=-Grano[i].Getaz()-L/2;
       
@@ -326,14 +285,14 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       Fn=n*componenteFn;
       F2=Fn;
     }
-    }*/
+  }}
 
   
   //--------------------------------------------------------------------------------------------------------
   //Colisión entre las esferas (vertices) del cubo y la superficie(esfera). Tipo de Colisión Esfera-Esfera.;
   //--------------------------------------------------------------------------------------------------------
-  
-  /*for (int i = 0;i<8;i++){
+  if(cual==0){
+  for (int i = 0;i<8;i++){
     double z=Grano[i].Getz(),r2=-L/2+R;
     if(z<r2){        //Condición de contacto Esfera-Superficie.
       
@@ -347,13 +306,13 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       Fn=n*componenteFn;
       F2=Fn;
     }
-  }*/
+  }}
   
 
   //---------------------------------------------------------------------------------------------------------------------------
   // Colisión entre los cilindros (lados) del cubo y la superficie (cilindro).Tipo de Colisión Cilindro-Cilindro-Ejes Paralelos.
   //---------------------------------------------------------------------------------------------------------------------------
-  
+  if(cual==2){
   for (int i = 8;i<20;i++){
     double z=Grano[i].Getz(),r2=-L/2+R;
     if(z<r2){        //Condición de contacto Cilindro-Superficie.
@@ -365,10 +324,11 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
       Fn=n*componenteFn;
       F2=Fn;
     }
-  }
+  }}
   
 
-  for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}    
+  for(int i=0;i<N-1;i++){Grano[i].AgregueFuerza(F2*(-1));}
+  //for(int i=0;i<N-1;i++){Grano[i].AgregueTorque((n*(-R2))^Ft)}
   
 }
 
