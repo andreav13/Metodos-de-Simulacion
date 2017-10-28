@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <cmath> 
 #include "Vector.h"
 #include "Random64.h"
@@ -114,8 +113,7 @@ void Cuerpo::Mueva_r(Cuerpo * parte, double dt, double Constante){
   for (i=0;i<8;i++){parte[i].Rotar_esfera(THETA.z(),THETA.x(),h,k,l);}
   for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(THETA.z(),THETA.x(),h,k,l);}
   for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(THETA.z(),THETA.x(),h,k,l);}
-  for (i=20;i<26;i++){parte[i].Rotar_plano(THETA.z(),THETA.x(),h,k,l);} 
-
+  for (i=20;i<26;i++){parte[i].Rotar_plano(THETA.z(),THETA.x(),h,k,l);}
 }
 
 
@@ -123,6 +121,7 @@ void Cuerpo::Mueva_V(double dt, double Constante){
   V+=F*(Constante*dt)/m;
   omega+=tau*(Constante*dt)/I;
 }
+
 
 void Cuerpo::Dibujar_esfera(void){
   cout<<", "<<r.x()<<"+"<<R<<"*sin(u)*cos(v),"<<r.y()<<"+"<<R<<"*sin(u)*sin(v),"<<r.z()<<"+"<<R<<"*cos(u)";
@@ -264,7 +263,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   double h=(B.Getx()+F.Getx())/2.,     k=(B.Gety()+F.Gety())/2.,     l=(B.Getz()+F.Getz())/2.;
   
   vector3D F2,Fn,n,Vc,Vcn,torque,dist;
-  double componenteVcn,componenteFn,ERR=dt,x=h,y=k,z=l;
+  double componenteVcn,componenteFn,ERR=dt,x=h,y=k,z=l-A/2.;
 
   //Vector unitario normal a la superficie.
   n.cargue(0,0,-1);
@@ -291,7 +290,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   //--------------------------------------------------------------------------------------------------------
   if(cual==0){
   for (int i = 0;i<8;i++){
-    double r2=-L/2.+R; x=Grano[i].Getx(); y=Grano[i].Gety(); z=Grano[i].Getz();
+    double r2=-L/2.; x=Grano[i].Getx(); y=Grano[i].Gety(); z=Grano[i].Getz()-R;
     if(z<r2){        //Condición de contacto Esfera-Superficie.
       
       double Rpared=10000;                                                        //Distancia que penetra la esfera en el plano(otra esfera)
@@ -327,9 +326,22 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   // Colisión entre los cilindros (lados) del cubo y la superficie (cilindro).Tipo de Colisión Cilindro-Cilindro-Ejes Paralelos.
   //---------------------------------------------------------------------------------------------------------------------------
   if(cual==2){
+    double z1=Grano[0].Getz(),z2=Grano[1].Getz(); int i1=0,i2=1;
+    for(int i=2;i<8;i++){
+      if(Grano[i].Getz()<=z1){
+	z2=z1;
+	z1=Grano[i].Getz();
+	i2=i1;
+	i1=i;
+      }
+    }
+
+    Cuerpo B=Grano[i1], F=Grano[i2];
+    double ccx=(B.Getx()+F.Getx())/2.,     ccy=(B.Gety()+F.Gety())/2.,     ccz=(B.Getz()+F.Getz())/2.;
+
   for (int i = 8;i<20;i++){
-    double r2=-L/2.+R; x=Grano[i].Getx(); y=Grano[i].Gety(); z=Grano[i].Getz();
-    if(z<r2){        //Condición de contacto Cilindro-Superficie.
+    double r2=-L/2.; x=ccx; y=ccy; z=ccz; double zeta=Grano[i].Getz()-R;
+    if(zeta<r2){        //Condición de contacto Cilindro-Superficie.
 
       double s_cilindro=r2-z;           //Distancia que penetra el cilindro en el plano(otra cilindro)                                    
       
@@ -350,7 +362,7 @@ void Colisionador::CalculeLaFuerzaEntrePlanos(Cuerpo * Grano, double dt){
   dist.cargue(x-h,y-k,z-l);
   torque=dist^F2;
   
-  for(int i=0;i<N-1;i++){Grano[i].AgregueTorque(-1*torque);}
+  for(int i=0;i<N-1;i++){Grano[i].AgregueTorque(torque);}
 
   //cout<<"x "<<x<<" y "<<y<<" z "<<z<<endl;
   //cout<<"dist.x "<<dist.x()<<" dist.y "<<dist.y()<<" dist.z "<<dist.z()<<endl;
@@ -391,7 +403,7 @@ void TermineCuadro(void){
 
 int main(void){
 
-  double t, dt=1e-2, tmax=12;
+  double t, dt=1e-2, tmax=40;
   int Ndibujos;
   double tdibujo;
   Cuerpo parte[N];
@@ -400,9 +412,9 @@ int main(void){
 
   double me=1,mc=1,mp=1,mp_grande=1000;
   double Ie=2/5.*me*R*R, Ic=1/2.*mc*R*R, Ip=1/6.*mp*A*A, Ip_grande=1/6.*mp_grande*L*L;
-  double V=0, Vy=0, theta0=M_PI, omega0=10;
+  double V=0, Vy=0, theta0=0, omega0=0;
 
-  Ndibujos=300;
+  Ndibujos=100;
   InicieAnimacion();
   
 
@@ -455,10 +467,10 @@ int main(void){
 
   int i;
   double h=A/2.,k=A/2.,l=A/2.;
-  for (i=0;i<8;i++){parte[i].Rotar_esfera(M_PI/8,0,h,k,l);}
-  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(M_PI/8,0,h,k,l);}
-  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(M_PI/8,0,h,k,l);}
-  for (i=20;i<26;i++){parte[i].Rotar_plano(M_PI/8,0,h,k,l);}
+  for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/8,h,k,l);}
+  for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/8,h,k,l);}
+  for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/8,h,k,l);}
+  for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/8,h,k,l);}
   
   //Dibuja cubo y plano
   for (t=tdibujo=0;t<tmax;t+=dt,tdibujo+=dt){
@@ -476,13 +488,13 @@ int main(void){
       }
 
     //Rota cubo
-    Cuerpo A=parte[0], F=parte[7];
-    double h=(A.Getx()+F.Getx())/2.,     k=(A.Gety()+F.Gety())/2.,     l=(A.Getz()+F.Getz())/2.;
+    Cuerpo B=parte[0], F=parte[7];
+    double h=(B.Getx()+F.Getx())/2.,     k=(B.Gety()+F.Gety())/2.,     l=(B.Getz()+F.Getz())/2.;
 
-    for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/20,h,k,l);}
-    for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/20,h,k,l);}
-    for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/20,h,k,l);}
-    for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/20,h,k,l);}
+    //for (i=0;i<8;i++){parte[i].Rotar_esfera(0,M_PI/20,h,k,l);}
+    //for (i=8;i<20;i++)if(i%3!=1){parte[i].Rotar_cilindro1(0,M_PI/20,h,k,l);}
+    //for (i=8;i<20;i++)if(i%3==1){parte[i].Rotar_cilindro2(0,M_PI/20,h,k,l);}
+    //for (i=20;i<26;i++){parte[i].Rotar_plano(0,M_PI/20,h,k,l);}
 
     
     //Muevase con Omelyan FR.
@@ -526,6 +538,7 @@ int main(void){
     }
     
   }
+
   
   return 0;
   
