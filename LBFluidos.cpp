@@ -152,8 +152,6 @@ int main(void){
 
   LatticeBoltzmann Ang;
   int t,tmax=1000;
-
-  double rho0=0,Jx0=0,Jy0=0;
   
   //Inicie
   Ang.Inicie(RHOinicial,Uentrada,0);
