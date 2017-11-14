@@ -12,38 +12,35 @@ using namespace std;
 #define Nx 64   //Numero de hilos por bloque
 const int Mx=(Lx+Nx-1)/Nx;   //Numero de bloques
 
-__constant__ float d_w[5];
-__device__ float SumeleUno(float x){
-  return x+1;
-}
-__global__ void SumeleAlgo(float *d_test){
-  (*d_test)+=SumeleUno(d_w[0]);
+__global__ void SumeDosVectores(float *d_a, float *d_b, float *d_c){
+  int ix;
+  ix=blockIdx.x*blockDim.x+threadIdx.x;
 }
 
 
 int main(void){
 
   //DECLARAR LAS MATRICES
-  float h_w[5]; //w[i]
-  
-  float h_test[Lx];    //h por host, d por device
-  float *d_test; cudaMalloc((void**) &d_test, sizeof(float));
+  float h_a[Lx];   float *d_a; cudaMalloc((void**) &d_a, Lx*sizeof(float));
+  float h_b[Lx];   float *d_b; cudaMalloc((void**) &d_b, Lx*sizeof(float));
+  float h_c[Lx];   float *d_c; cudaMalloc((void**) &d_c, Lx*sizeof(float));
   int ix;
 
   //INICIALIZAR LOS DATOS
   //Cargar en el host
-  for(ix=0;ix<Lx;ix++) h_test[ix]=ix;
-  h_test[0]=10;
-  h_w[0]=1./3; h_w[1]=h_w[2]=h_w[3]=h_w[4]=1./6;
+  for(ix=0;ix<Lx;ix++) {
+    h_a[ix]=ix;
+    h_b[ix]=2*ix;
+  }
   //Enviarlo al device
   //        a donde, de donde,   tamano,        flag    
-  cudaMemcpy(d_test, h_test, Lx*sizeof(float), cudaMemcpyHostToDevice);
-  cudaMemcpyToSymbol(d_w,h_w,5*sizeof(float),0,cudaMemcpyHostToDevice);
+  cudaMemcpy(d_a, h_a, Lx*sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_b, h_b, Lx*sizeof(float), cudaMemcpyHostToDevice);
     
   //PROCESAR EN LA TARJETA GRAFICA
   dim3 ThreadsPerBlock(Nx,1,1);
   dim3 BlocksPerGrid(Mx,1,1);
-  SumeleAlgo<<<BlocksPerGrid,ThreadsPerBlock>>>(d_test); //funcionAQUIEN(parametro)
+  SumeDosVectores<<<BlocksPerGrid,ThreadsPerBlock>>>(d_a,d_b,d_c);
 
   //IMPRIMIR LOS DATOS
   //Devolverlos al host
