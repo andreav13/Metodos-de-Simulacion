@@ -15,6 +15,7 @@ const int Mx=(Lx+Nx-1)/Nx;   //Numero de bloques
 __global__ void SumeDosVectores(float *d_a, float *d_b, float *d_c){
   int ix;
   ix=blockIdx.x*blockDim.x+threadIdx.x;
+  d_c[ix]=d_a[ix]+d_b[ix];
 }
 
 
@@ -44,12 +45,14 @@ int main(void){
 
   //IMPRIMIR LOS DATOS
   //Devolverlos al host
-  cudaMemcpy(h_test,d_test,Lx*sizeof(float),cudaMemcpyDeviceToHost);
+  cudaMemcpy(h_c,d_c,Lx*sizeof(float),cudaMemcpyDeviceToHost);
   //Imprimirlos
-  for(ix=0;ix<Lx;ix++) cout<<h_test[ix]<<endl;
+  for(ix=0;ix<Lx;ix++) cout<<h_c[ix]<<endl;
 
   //LIBERAR MEMORIA
-  cudaFree(d_test);
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
 
   
   return 0;
