@@ -22,11 +22,11 @@ __constant__ float d_w[Q];
 __constant__ int d_Vx[Q];
 __constant__ int d_Vy[Q];
 
-__global__ void IncrementarMatriz(float *d_a,size_t pitcha){
+__global__ void IncrementarMatriz(float *d_f0,size_t pitchf0,float *d_f1,size_t pitchf1,float *d_f2,size_t pitchf2,float *d_f3,size_t pitchf3,float *d_f4,size_t pitchf4){
   int ix,iy; float *a;
   ix=blockIdx.x*blockDim.x+threadIdx.x;  iy=blockIdx.y*blockDim.y+threadIdx.y;
 
-  a=d_a+(ix*pitcha)/sizeof(float)+iy;
+  a=d_f2+(ix*pitchf2)/sizeof(float)+iy;
   
   (*a)++;
 }
@@ -38,6 +38,10 @@ private:
   float h_w[Q];   //w[i]
   int h_Vx[Q],h_Vy[Q];  //Vx[i],Vy[i]
   float h_f0[Lx][Ly]; float *d_f0; size_t pitchf0;
+  float h_f1[Lx][Ly]; float *d_f1; size_t pitchf1;
+  float h_f2[Lx][Ly]; float *d_f2; size_t pitchf2;
+  float h_f3[Lx][Ly]; float *d_f3; size_t pitchf3;
+  float h_f4[Lx][Ly]; float *d_f4; size_t pitchf4;
 public:
   LatticeBoltzmann(void);
   ~LatticeBoltzmann(void);
@@ -49,10 +53,18 @@ public:
 LatticeBoltzmann::LatticeBoltzmann(void){
   //Construir las matrices virtuales en el Device
   cudaMallocPitch((void**) &d_f0,&pitchf0,Ly*sizeof(float),Lx);
+  cudaMallocPitch((void**) &d_f1,&pitchf1,Ly*sizeof(float),Lx);
+  cudaMallocPitch((void**) &d_f2,&pitchf2,Ly*sizeof(float),Lx);
+  cudaMallocPitch((void**) &d_f3,&pitchf3,Ly*sizeof(float),Lx);
+  cudaMallocPitch((void**) &d_f4,&pitchf4,Ly*sizeof(float),Lx);
 }
 
 LatticeBoltzmann::~LatticeBoltzmann(void){
   cudaFree(d_f0);
+  cudaFree(d_f1);
+  cudaFree(d_f2);
+  cudaFree(d_f3);
+  cudaFree(d_f4);
 }
 
 void LatticeBoltzmann::Inicie(void){
@@ -72,19 +84,27 @@ void LatticeBoltzmann::Inicie(void){
   //Cargar valores en el Host
   for(ix=0;ix<Lx;ix++)
     for(iy=0;iy<Ly;iy++)
-      h_f0[ix][iy]=ix*Ly+iy;
+      h_f0[ix][iy]=h_f1[ix][iy]=h_f2[ix][iy]=h_f3[ix][iy]=h_f4[ix][iy]=ix*Ly+iy;
   //Llevar al Device
   cudaMemcpy2D(d_f0,pitchf0,h_f0,Ly*sizeof(float),Ly*sizeof(float),Lx,cudaMemcpyHostToDevice);
+  cudaMemcpy2D(d_f1,pitchf1,h_f1,Ly*sizeof(float),Ly*sizeof(float),Lx,cudaMemcpyHostToDevice);
+  cudaMemcpy2D(d_f2,pitchf2,h_f2,Ly*sizeof(float),Ly*sizeof(float),Lx,cudaMemcpyHostToDevice);
+  cudaMemcpy2D(d_f3,pitchf3,h_f3,Ly*sizeof(float),Ly*sizeof(float),Lx,cudaMemcpyHostToDevice);
+  cudaMemcpy2D(d_f4,pitchf4,h_f4,Ly*sizeof(float),Ly*sizeof(float),Lx,cudaMemcpyHostToDevice);
 }
 
 void LatticeBoltzmann::Imprimase(void){
   int ix,iy;
   //Devolver los datos al Host
   cudaMemcpy2D(h_f0,Ly*sizeof(float),d_f0,pitchf0,Ly*sizeof(float),Lx,cudaMemcpyDeviceToHost);
+  cudaMemcpy2D(h_f1,Ly*sizeof(float),d_f1,pitchf1,Ly*sizeof(float),Lx,cudaMemcpyDeviceToHost);
+  cudaMemcpy2D(h_f2,Ly*sizeof(float),d_f2,pitchf2,Ly*sizeof(float),Lx,cudaMemcpyDeviceToHost);
+  cudaMemcpy2D(h_f3,Ly*sizeof(float),d_f3,pitchf3,Ly*sizeof(float),Lx,cudaMemcpyDeviceToHost);
+  cudaMemcpy2D(h_f4,Ly*sizeof(float),d_f4,pitchf4,Ly*sizeof(float),Lx,cudaMemcpyDeviceToHost);
   //Mostrar
   for(ix=0;ix<Lx;ix++){
     for(iy=0;iy<Ly;iy++)
-      cout<<h_f0[ix][iy]<<" ";
+      cout<<h_f2[ix][iy]<<" ";
     cout<<endl;
   }
   cout<<endl;
@@ -94,7 +114,7 @@ void LatticeBoltzmann::Incremente(void){
   //Procesar en el Device
   dim3 ThreadsPerBlock(Nx,Ny,1);
   dim3 BlocksPerGrid(Mx,My,1);
-  IncrementarMatriz<<<BlocksPerGrid,ThreadsPerBlock>>>(d_f0,pitchf0);
+  IncrementarMatriz<<<BlocksPerGrid,ThreadsPerBlock>>>(d_f0,pitchf0,d_f1,pitchf1,d_f2,pitchf2,d_f3,pitchf3,d_f4,pitchf4);
 }
 
 
