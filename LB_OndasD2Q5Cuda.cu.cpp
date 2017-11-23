@@ -1,4 +1,3 @@
-// Programa que hace c=a+b para a,b,c vectores en CUDA
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -22,7 +21,11 @@ __constant__ float d_w[Q];
 __constant__ int d_Vx[Q];
 __constant__ int d_Vy[Q];
 
-__global__ void IncrementarMatriz(float *d_f0,size_t pitchf0,float *d_f1,size_t pitchf1,float *d_f2,size_t pitchf2,float *d_f3,size_t pitchf3,float *d_f4,size_t pitchf4){
+__global__ void IncrementarMatriz(float *d_f0,size_t pitchf0,
+				  float *d_f1,size_t pitchf1,
+				  float *d_f2,size_t pitchf2,
+				  float *d_f3,size_t pitchf3,
+				  float *d_f4,size_t pitchf4){
   int ix,iy; float *a;
   ix=blockIdx.x*blockDim.x+threadIdx.x;  iy=blockIdx.y*blockDim.y+threadIdx.y;
 
@@ -114,7 +117,11 @@ void LatticeBoltzmann::Incremente(void){
   //Procesar en el Device
   dim3 ThreadsPerBlock(Nx,Ny,1);
   dim3 BlocksPerGrid(Mx,My,1);
-  IncrementarMatriz<<<BlocksPerGrid,ThreadsPerBlock>>>(d_f0,pitchf0,d_f1,pitchf1,d_f2,pitchf2,d_f3,pitchf3,d_f4,pitchf4);
+  IncrementarMatriz<<<BlocksPerGrid,ThreadsPerBlock>>>(d_f0,pitchf0,
+						       d_f1,pitchf1,
+						       d_f2,pitchf2,
+						       d_f3,pitchf3,
+						       d_f4,pitchf4);
 }
 
 
