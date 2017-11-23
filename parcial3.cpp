@@ -188,7 +188,7 @@ int main(void){
       RhoMin<<ix<<" "<<rhomin<<endl;
       
       if (rhomax>Amax) Amax=rhomax;
-      if (rhomin<Amin) Amin=rhomin;
+      if (rhomax<Amin) Amin=rhomax;
     }
   }
   RhoMax.close();
