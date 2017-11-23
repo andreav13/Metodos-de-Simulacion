@@ -171,7 +171,7 @@ int main(void){
 
   ofstream RhoMax("rhomax.dat");
   ofstream RhoMin("rhomin.dat");
-  double Amax=0, Amin=0;
+  double Amax=0, Amin=30;
   for(int ix=1;ix<Lx-1;ix++){
     for(int iy=0;iy<Ly;iy++){
       double rhomax=0,rhomin=0, rho0;
