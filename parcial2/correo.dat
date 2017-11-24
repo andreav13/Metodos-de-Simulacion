@@ -1,2 +1,8 @@
+punto 3) 
   D       SWR        Cabs
   0.6	  8.01       0.395
+
+punto 4)
+La dependencia entre D y el coeficiente de absorcion es cubica. Haciendo un fit se obtuvo la siguiente relacion:
+
+Cabs = 0.8907-0.6225D-0.4466D^2+0.1772D^3
